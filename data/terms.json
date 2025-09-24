@@ -2,49 +2,51 @@
   {
     "id": "bedir-zaferi",
     "title": "Bedir Zaferi",
-    "description": "Ýslâm tarihindeki ilk büyük savaþýn dönüm noktasý.",
+    "description": "ï¿½slï¿½m tarihindeki ilk bï¿½yï¿½k savaï¿½ï¿½n dï¿½nï¿½m noktasï¿½.",
     "image": "/terms/bedir.svg"
   },
   {
     "id": "hudeybiye-barisi",
-    "title": "Hudeybiye Barýþý",
-    "description": "Mekke ile yapýlan barýþ anlaþmasý stratejik bir nefes oldu.",
+    "title": "Hudeybiye Barï¿½ï¿½ï¿½",
+    "description": "Mekke ile yapï¿½lan barï¿½ï¿½ anlaï¿½masï¿½ stratejik bir nefes oldu.",
     "image": "/terms/hudeybiye.svg"
   },
   {
     "id": "hicret",
     "title": "Hicret",
-    "description": "Müslümanlarýn Medineye göçü yeni bir baþlangýçtý.",
-    "image": "/terms/hicret.svg"
+    "description": "Mï¿½slï¿½manlarï¿½n Medineye gï¿½ï¿½ï¿½ yeni bir baï¿½langï¿½ï¿½tï¿½.",
+    "image": "/terms/hicret.svg",
+    "createdAt": "2025-09-24T19:14:26.989Z",
+    "updatedAt": "2025-09-24T19:14:26.989Z"
   },
   {
     "id": "veda-hutbesi",
     "title": "Veda Hutbesi",
-    "description": "Hz. Peygamberin insanlýða evrensel mesajý.",
+    "description": "Hz. Peygamberin insanlï¿½ï¿½a evrensel mesajï¿½.",
     "image": "/terms/veda.svg"
   },
   {
     "id": "akabe-biatlari",
-    "title": "Akabe Biatlarý",
-    "description": "Medineli müminlerle yapýlan tarihî sözleþme.",
+    "title": "Akabe Biatlarï¿½",
+    "description": "Medineli mï¿½minlerle yapï¿½lan tarihï¿½ sï¿½zleï¿½me.",
     "image": "/terms/akabe.svg"
   },
   {
     "id": "duygusal-dayanisma",
-    "title": "Kardeþlik Dayanýþmasý",
-    "description": "Muhacirlerle Ensar arasýndaki saðlam bað.",
+    "title": "Kardeï¿½lik Dayanï¿½ï¿½masï¿½",
+    "description": "Muhacirlerle Ensar arasï¿½ndaki saï¿½lam baï¿½.",
     "image": "/terms/kardeslik.svg"
   },
   {
     "id": "uhud-dersleri",
     "title": "Uhud Dersleri",
-    "description": "Strateji ve itaatin önemini hatýrlatan çetin imtihan.",
+    "description": "Strateji ve itaatin ï¿½nemini hatï¿½rlatan ï¿½etin imtihan.",
     "image": "/terms/uhud.svg"
   },
   {
     "id": "suffa-mektebi",
     "title": "Suffa Mektebi",
-    "description": "Mescid-i Nebi de ilim halkasý.",
+    "description": "Mescid-i Nebi de ilim halkasï¿½.",
     "image": "/terms/suffa.svg"
   }
 ]
