@@ -1,0 +1,119 @@
+.card {
+  position: relative;
+  width: clamp(110px, 22vw, 160px);
+  aspect-ratio: 3 / 4;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  perspective: 1200px;
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 0.35s ease, filter 0.35s ease;
+}
+
+.card:disabled {
+  cursor: default;
+}
+
+.inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.25, 0.85, 0.45, 1.1), box-shadow 0.35s ease;
+  border-radius: 22px;
+  box-shadow: 0 16px 35px rgba(12, 8, 45, 0.42);
+}
+
+.card:not(:disabled):hover .inner,
+.card:not(:disabled):focus-visible .inner {
+  box-shadow: 0 24px 46px rgba(18, 10, 50, 0.64);
+  transform: translateY(-6px);
+}
+
+.flipped .inner,
+.matched .inner {
+  transform: rotateY(180deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  backface-visibility: hidden;
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.front {
+  background: linear-gradient(145deg, rgba(125, 99, 255, 0.82), rgba(255, 149, 213, 0.88));
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  position: relative;
+}
+
+.gloss {
+  position: absolute;
+  top: -30%;
+  left: -55%;
+  width: 130%;
+  height: 60%;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.52), transparent 70%);
+  transform: rotate(18deg);
+}
+
+.question {
+  font-family: var(--font-display, inherit);
+  font-size: clamp(2.6rem, 5vw, 3.8rem);
+  color: #ffffff;
+  text-shadow: 0 12px 28px rgba(64, 22, 120, 0.55);
+}
+
+.back {
+  background: linear-gradient(140deg, rgba(22, 18, 70, 0.92), rgba(46, 25, 92, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  transform: rotateY(180deg);
+  padding: 16px;
+  gap: 14px;
+}
+
+.imageWrap {
+  width: 72%;
+  aspect-ratio: 1;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.08);
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.termTitle {
+  font-size: clamp(0.75rem, 1.4vw, 0.95rem);
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.matched .inner {
+  box-shadow: 0 0 38px rgba(110, 224, 199, 0.78);
+}
+
+.matched .back {
+  background: linear-gradient(140deg, rgba(86, 215, 183, 0.95), rgba(112, 184, 255, 0.97));
+  border-color: rgba(255, 255, 255, 0.38);
+}
+
+.matched .termTitle {
+  color: #10263c;
+}
+
+@media (max-width: 600px) {
+  .card {
+    width: clamp(88px, 30vw, 112px);
+  }
+
+  .question {
+    font-size: clamp(2.3rem, 9vw, 3.2rem);
+  }
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "bedir-zaferi",
+    "title": "Bedir Zaferi",
+    "description": "Ýslâm tarihindeki ilk büyük savaþýn dönüm noktasý.",
+    "image": "/terms/bedir.svg"
+  },
+  {
+    "id": "hudeybiye-barisi",
+    "title": "Hudeybiye Barýþý",
+    "description": "Mekke ile yapýlan barýþ anlaþmasý stratejik bir nefes oldu.",
+    "image": "/terms/hudeybiye.svg"
+  },
+  {
+    "id": "hicret",
+    "title": "Hicret",
+    "description": "Müslümanlarýn Medineye göçü yeni bir baþlangýçtý.",
+    "image": "/terms/hicret.svg"
+  },
+  {
+    "id": "veda-hutbesi",
+    "title": "Veda Hutbesi",
+    "description": "Hz. Peygamberin insanlýða evrensel mesajý.",
+    "image": "/terms/veda.svg"
+  },
+  {
+    "id": "akabe-biatlari",
+    "title": "Akabe Biatlarý",
+    "description": "Medineli müminlerle yapýlan tarihî sözleþme.",
+    "image": "/terms/akabe.svg"
+  },
+  {
+    "id": "duygusal-dayanisma",
+    "title": "Kardeþlik Dayanýþmasý",
+    "description": "Muhacirlerle Ensar arasýndaki saðlam bað.",
+    "image": "/terms/kardeslik.svg"
+  },
+  {
+    "id": "uhud-dersleri",
+    "title": "Uhud Dersleri",
+    "description": "Strateji ve itaatin önemini hatýrlatan çetin imtihan.",
+    "image": "/terms/uhud.svg"
+  },
+  {
+    "id": "suffa-mektebi",
+    "title": "Suffa Mektebi",
+    "description": "Mescid-i Nebi de ilim halkasý.",
+    "image": "/terms/suffa.svg"
+  }
+]
