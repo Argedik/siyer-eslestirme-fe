@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import type { Term } from "@/lib/terms";
 import MemoryCard, { type MemoryCardData } from "@/components/game/MemoryCard";
@@ -42,6 +42,19 @@ type Player = {
   name: string;
   score: number;
   color: string;
+};
+
+type RankedPlayer = Player & { originalIndex: number };
+
+type TurnPopup = {
+  name: string;
+  color: string;
+};
+
+type TurnPopupOptions = {
+  lockBoard?: boolean;
+  unlockAfter?: boolean;
+  onComplete?: () => void;
 };
 
 function classNames(...values: Array<string | false | undefined>): string {
@@ -115,6 +128,65 @@ export default function LandingPage({ terms }: LandingPageProps) {
   const [matches, setMatches] = useState(0);
   const [status, setStatus] = useState<GameStatus>("idle");
   const [showValidation, setShowValidation] = useState(false);
+  const [turnPopup, setTurnPopup] = useState<TurnPopup | null>(null);
+
+  const popupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const playersRef = useRef<Player[]>(players);
+
+  const ranking = useMemo<RankedPlayer[]>(() => {
+    return players
+      .map((player, index) => ({ ...player, originalIndex: index }))
+      .sort((a, b) => {
+        if (b.score !== a.score) {
+          return b.score - a.score;
+        }
+        return a.originalIndex - b.originalIndex;
+      });
+  }, [players]);
+
+  const clearTurnPopup = useCallback(() => {
+    if (popupTimerRef.current) {
+      clearTimeout(popupTimerRef.current);
+      popupTimerRef.current = null;
+    }
+    setTurnPopup(null);
+  }, []);
+
+  const displayTurnPopup = useCallback(
+    (player: Player | null | undefined, options?: TurnPopupOptions) => {
+      if (!player) {
+        return;
+      }
+      const { lockBoard = true, unlockAfter = true, onComplete } = options ?? {};
+      if (popupTimerRef.current) {
+        clearTimeout(popupTimerRef.current);
+      }
+      if (lockBoard) {
+        setLocked(true);
+      }
+      setTurnPopup({ name: player.name, color: player.color });
+      popupTimerRef.current = setTimeout(() => {
+        onComplete?.();
+        setTurnPopup(null);
+        if (lockBoard && unlockAfter) {
+          setLocked(false);
+        }
+        popupTimerRef.current = null;
+      }, 3000);
+    },
+    []
+  );
+
+  useEffect(() => {
+    return () => {
+      clearTurnPopup();
+    };
+  }, [clearTurnPopup]);
+
+  useEffect(() => {
+    playersRef.current = players;
+  }, [players]);
 
   useEffect(() => {
     setPlayers((prev) => {
@@ -159,10 +231,13 @@ export default function LandingPage({ terms }: LandingPageProps) {
       return;
     }
     if (firstCard.isMatched && secondCard.isMatched) {
+      setSelectedIds([]);
+      setLocked(false);
       return;
     }
 
     const isMatch = firstCard.matchId === secondCard.matchId;
+    const playersSnapshot = playersRef.current;
     let timeout: ReturnType<typeof setTimeout> | undefined;
 
     if (isMatch) {
@@ -186,18 +261,37 @@ export default function LandingPage({ terms }: LandingPageProps) {
         setLocked(false);
       }, 750);
     } else {
-      timeout = setTimeout(() => {
-        setCards((prev) =>
-          prev.map((card) =>
-            selectedIds.includes(card.id)
-              ? { ...card, isFlipped: false }
-              : card
-          )
-        );
-        setSelectedIds([]);
-        setLocked(false);
-        setActiveIndex((prev) => (prev + 1) % players.length);
-      }, 1000);
+      const mismatchIds = [...selectedIds];
+      const totalPlayers = playersSnapshot.length;
+      if (totalPlayers === 0) {
+        timeout = setTimeout(() => {
+          setCards((prev) =>
+            prev.map((card) =>
+              mismatchIds.includes(card.id)
+                ? { ...card, isFlipped: false }
+                : card
+            )
+          );
+          setSelectedIds([]);
+          setLocked(false);
+        }, 3000);
+      } else {
+        const nextIndex = (activeIndex + 1) % totalPlayers;
+        const nextPlayer = playersSnapshot[nextIndex];
+        displayTurnPopup(nextPlayer, {
+          onComplete: () => {
+            setCards((prev) =>
+              prev.map((card) =>
+                mismatchIds.includes(card.id)
+                  ? { ...card, isFlipped: false }
+                  : card
+              )
+            );
+            setSelectedIds([]);
+            setActiveIndex(nextIndex);
+          },
+        });
+      }
     }
 
     return () => {
@@ -205,19 +299,32 @@ export default function LandingPage({ terms }: LandingPageProps) {
         clearTimeout(timeout);
       }
     };
-  }, [selectedIds, cards, activeIndex, players.length, status]);
+  }, [selectedIds, cards, activeIndex, players.length, status, displayTurnPopup]);
 
   useEffect(() => {
     if (status === "playing" && pairCount > 0 && matches >= pairCount) {
+      clearTurnPopup();
       setStatus("complete");
       setLocked(true);
     }
-  }, [matches, pairCount, status]);
+  }, [matches, pairCount, status, clearTurnPopup]);
 
   const canStart = players.every((player) => player.name.trim().length > 0);
   const progress = pairCount > 0 ? Math.min(100, Math.round((matches / pairCount) * 100)) : 0;
-  const leadingScore = useMemo(() => Math.max(0, ...players.map((player) => player.score)), [players]);
-  const winners = players.filter((player) => player.score === leadingScore && leadingScore > 0);
+  const activePlayer = players[activeIndex];
+
+  const statusLine = (() => {
+    if (status === "complete") {
+      return "Tebrikler! Tüm kartlar açıldı.";
+    }
+    if (turnPopup) {
+      return `${turnPopup.name} sahneye çıkıyor!`;
+    }
+    if (status === "playing") {
+      return `${activePlayer?.name ?? "Oyuncu"} sırada. İki kart seç!`;
+    }
+    return "Kartları çevirmek için oyunu başlat.";
+  })();
 
   const handleNameChange = (index: number, value: string) => {
     setPlayers((prev) => {
@@ -245,24 +352,28 @@ export default function LandingPage({ terms }: LandingPageProps) {
       if (!target || target.isMatched || target.isFlipped) {
         return prev;
       }
-      const next = prev.map((card) =>
+      return prev.map((card) =>
         card.id === cardId ? { ...card, isFlipped: true } : card
       );
-      return next;
     });
     setSelectedIds((prev) =>
       prev.includes(cardId) ? prev : [...prev, cardId].slice(-2)
     );
   };
 
-  const resetToSetup = () => {
-    setStatus("idle");
-    setStep("setup");
+  const clearBoardState = () => {
+    clearTurnPopup();
     setCards([]);
     setMatches(0);
     setSelectedIds([]);
     setLocked(false);
     setActiveIndex(0);
+  };
+
+  const resetToSetup = () => {
+    clearBoardState();
+    setStatus("idle");
+    setStep("setup");
   };
 
   const startGame = () => {
@@ -271,35 +382,29 @@ export default function LandingPage({ terms }: LandingPageProps) {
       return;
     }
     const deck = buildDeck(terms, pairCount);
+    const preparedPlayers = players.map((player, index) => ({
+      ...player,
+      id: `player-${index}`,
+      score: 0,
+    }));
+
+    clearBoardState();
+    setPlayers(preparedPlayers);
     setCards(deck);
-    setMatches(0);
-    setSelectedIds([]);
-    setLocked(false);
-    setActiveIndex(0);
-    setPlayers((prev) =>
-      prev.map((player, index) => ({
-        ...player,
-        id: `player-${index}`,
-        score: 0,
-      }))
-    );
     setStatus("playing");
     setStep("play");
+
+    if (preparedPlayers[0]) {
+      displayTurnPopup(preparedPlayers[0]);
+    }
   };
 
-  const statusLine = (() => {
-    if (status === "complete") {
-      if (winners.length > 0) {
-        const title = winners.map((player) => player.name).join(" & ");
-        return `${title} şampiyon oldu!`;
-      }
-      return "Berabere! Herkes aynı puanda.";
-    }
-    if (status === "playing") {
-      return `${players[activeIndex]?.name ?? "Oyuncu"} sırada. İki kart aç!`;
-    }
-    return "Kartları çevirmek için oyunu başlat.";
-  })();
+  const rankingClass = (position: number) => {
+    if (position === 0) return styles.rankFirst;
+    if (position === 1) return styles.rankSecond;
+    if (position === 2) return styles.rankThird;
+    return styles.rankOther;
+  };
 
   return (
     <div className={styles.page}>
@@ -315,14 +420,25 @@ export default function LandingPage({ terms }: LandingPageProps) {
           3D <span className={styles.heroHighlight}>Siyer Eşleştirme</span> arenasına hoş geldin!
         </h1>
         <p className={styles.heroCopy}>
-          Cıvıl cıvıl animasyonlarla dolu bu kart oyunu, lise kulübün için hızlıca turnuva başlatmanı sağlar.
-          Oyuna katılmak isteyen herkes takma adını seçsin ve kartları galaksiler gibi döndürsün!
+          Sevgili kardeşlerim,
+            Siyer dersimize yeniden hoşgeldiniz. 🌿
+            <p>
+            Bugün burada bulunmamızın en önemli amacı, sadece bilgi edinmek değil; Efendimiz’in (s.a.v.) örnek hayatından dersler çıkararak kendi hayatımıza yön verebilmek. Onun adımlarını, sözlerini ve ahlâkını öğrenmek; bizlere imanımızı pekiştirme, kardeşliğimizi güçlendirme ve kulluğumuzu derinleştirme fırsatı sunuyor.
+            </p>
+            Rabbim bu dersimizi bizler için bir bereket kapısı eylesin, gönüllerimizi ilimle ve muhabbetle doldursun. 🤲✨
+            <p>
+              Hazırsanız hep birlikte bu yolculuğa başlayalım. 🚀
+            </p>
         </p>
         <div className={styles.actionRow}>
           <button
             type="button"
             className={styles.primaryButton}
-            onClick={() => setStep("setup")}
+            onClick={() => {
+              clearBoardState();
+              setStatus("idle");
+              setStep("setup");
+            }}
           >
             Oyunu Kur
           </button>
@@ -411,7 +527,15 @@ export default function LandingPage({ terms }: LandingPageProps) {
             <p className={styles.validation}>Başlamak için tüm oyuncular bir takma ad seçmeli.</p>
           )}
           <div className={styles.panelControls}>
-            <button type="button" className={styles.ghostButton} onClick={() => setStep("intro")}>
+            <button
+              type="button"
+              className={styles.ghostButton}
+              onClick={() => {
+                clearBoardState();
+                setStatus("idle");
+                setStep("intro");
+              }}
+            >
               ← Ana sayfa
             </button>
             <button type="button" className={styles.primaryButton} onClick={startGame}>
@@ -424,43 +548,50 @@ export default function LandingPage({ terms }: LandingPageProps) {
 
       {step === "play" && (
         <section className={styles.gameShell}>
-          <div className={styles.scoreRow}>
-            {players.map((player, index) => (
-              <div
-                key={player.id}
-                className={classNames(
-                  styles.scoreCard,
-                  index === activeIndex && status === "playing" && styles.scoreActive,
-                  winners.some((winner) => winner.id === player.id) && styles.scoreWinner
-                )}
-              >
-                <span className={styles.scoreBadge} style={{ backgroundColor: player.color }}>
-                  {player.name.slice(0, 1).toUpperCase()}
-                </span>
-                <div>
-                  <span className={styles.scoreName}>{player.name}</span>
-                  <span className={styles.scoreValue}>{player.score}</span>
-                </div>
+          <div className={styles.gameLayout}>
+            <div className={styles.gameArea}>
+              <div className={styles.progressTrack}>
+                <div className={styles.progressFill} style={{ width: `${progress}%` }} />
               </div>
-            ))}
+              <p className={styles.statusLine}>{statusLine}</p>
+              <div className={styles.board}>
+                {cards.map((card) => (
+                  <MemoryCard
+                    key={card.id}
+                    card={card}
+                    disabled={locked || status !== "playing"}
+                    onSelect={() => handleCardClick(card.id)}
+                  />
+                ))}
+              </div>
+            </div>
+            <aside className={styles.scorePanel}>
+              <div className={styles.scoreHeader}>
+                <h3>Skor sıralaması</h3>
+              </div>
+              <ol className={styles.scoreList}>
+                {ranking.map((player, position) => (
+                  <li
+                    key={player.id}
+                    className={classNames(
+                      styles.scoreItem,
+                      rankingClass(position),
+                      player.originalIndex === activeIndex && styles.scoreActive,
+                      turnPopup?.name === player.name && styles.scoreIncoming
+                    )}
+                  >
+                    <span className={styles.rankIcon} aria-hidden>
+                      {position < 3 ? "★" : ""}
+                    </span>
+                    <div className={styles.scoreInfo}>
+                      <span className={styles.playerName}>{player.name}</span>
+                      <span className={styles.playerScore}>{player.score} eşleşme</span>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </aside>
           </div>
-
-          <div className={styles.progressTrack}>
-            <div className={styles.progressFill} style={{ width: `${progress}%` }} />
-          </div>
-          <p className={styles.statusLine}>{statusLine}</p>
-
-          <div className={styles.board}>
-            {cards.map((card) => (
-              <MemoryCard
-                key={card.id}
-                card={card}
-                disabled={locked || status !== "playing"}
-                onSelect={() => handleCardClick(card.id)}
-              />
-            ))}
-          </div>
-
           <div className={styles.gameControls}>
             <button type="button" className={styles.ghostButton} onClick={resetToSetup}>
               Ayarları değiştir
@@ -470,17 +601,37 @@ export default function LandingPage({ terms }: LandingPageProps) {
             </button>
           </div>
 
+          {turnPopup && status === "playing" && (
+            <div className={styles.turnPopup}>
+              <div
+                className={styles.turnPopupCard}
+                style={{ borderColor: turnPopup.color, boxShadow: `0 18px 48px ${turnPopup.color}44` }}
+              >
+                <span className={styles.turnLabel}>Sıradaki oyuncu</span>
+                <strong>{turnPopup.name}</strong>
+              </div>
+            </div>
+          )}
+
           {status === "complete" && (
             <div className={styles.overlay}>
               <div className={styles.overlayCard}>
-                <h3>🎉 Eşleşmeler tamam!</h3>
-                {winners.length > 0 ? (
-                  <p>
-                    Tebrikler <strong>{winners.map((player) => player.name).join(", ")}</strong>! En çok eşleşmeyi siz buldunuz.
-                  </p>
-                ) : (
-                  <p>Bu tur berabere bitti. Yeni bir tur için kartları karıştır!</p>
-                )}
+                <h3>🎉 Tüm kartlar açıldı!</h3>
+                <p>İşte final sıralaması:</p>
+                <ol className={classNames(styles.finalRanking, styles.scoreList)}>
+                  {ranking.map((player, position) => (
+                    <li
+                      key={`final-${player.id}`}
+                      className={classNames(styles.finalRankItem, rankingClass(position))}
+                    >
+                      <span className={styles.rankIcon} aria-hidden>
+                        {position < 3 ? "★" : ""}
+                      </span>
+                      <span className={styles.finalRankName}>{player.name}</span>
+                      <span className={styles.finalRankScore}>{player.score} eşleşme</span>
+                    </li>
+                  ))}
+                </ol>
                 <button type="button" className={styles.primaryButton} onClick={startGame}>
                   Yeni tur başlat
                 </button>
@@ -492,3 +643,13 @@ export default function LandingPage({ terms }: LandingPageProps) {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
