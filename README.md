@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Siyer Kart Eşleştirme Oyunu
 
-## Getting Started
+Lise öğrencilerinin severek oynayacağı, 3D animasyonlarla zenginleştirilmiş bir kart eşleştirme oyunu. Oyuncular takma adlarını seçerek web tarayıcılarından oyuna katılabilir, tur ayarlarını yapabilir ve tarihî kavramları öğrenirken eğlenebilir. Yöneticiler ise admin panelinden kart havuzunu kolayca güncelleyebilir.
 
-First, run the development server:
+## Özellikler
+
+- 🪐 **3D kart animasyonları** ve neon temalı arayüz
+- 👥 Oyuncu sayısı ve kart çifti seçimi içeren esnek oyun kurulumu
+- 🏆 Canlı skor tablosu, eşleşme ilerleme çubuğu ve kazanan bildirimleri
+- ✨ Takma ad üretici ile hızlı oyuncu girişleri
+- 📚 JSON tabanlı veri deposu: kart başlıkları, açıklamalar ve görsel yolları
+- 🛠️ Admin paneli üzerinden kart ekleme, düzenleme ve silme işlemleri
+
+## Teknoloji
+
+- [Next.js 15 (App Router)](https://nextjs.org/)
+- [React 19](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Sass (CSS Modülleri)](https://sass-lang.com/)
+- Yerel JSON dosyasıyla basit veri depolama (`data/terms.json`)
+
+## Geliştirme Ortamı
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Varsayılan olarak uygulama `http://localhost:3000` adresinde çalışır. Üretim öncesi doğrulama için:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm build
+pnpm start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Admin Paneli
 
-## Learn More
+- `http://localhost:3000/admin` adresinden erişilir.
+- Formu kullanarak yeni kartlar ekleyebilir veya mevcut kartları düzenleyebilirsin.
+- Görsel alanına `public` klasöründeki SVG/PNG yollarını (/terms/... gibi) veya harici görsel adreslerini girebilirsin.
+- Kart silme işlemi onay diyaloğu içerir.
+- Admin aksiyonları hem oyun ana sayfasını hem de paneli otomatik olarak yeniden valide eder.
 
-To learn more about Next.js, take a look at the following resources:
+## Veri Yapısı
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Kart verileri `data/terms.json` dosyasında tutulur. Her kayıt şu alanları içerir:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```json
+{
+  "id": "hicret",
+  "title": "Hicret",
+  "description": "Müslümanların Medineye göçü yeni bir başlangıçtı.",
+  "image": "/terms/hicret.svg"
+}
+```
 
-## Deploy on Vercel
+Admin paneli üzerinden yapılan değişiklikler bu dosyaya yazılır ve yeni oyun turlarında otomatik olarak kullanılır.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Tasarım Notları
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Neon renk paleti, cam etkili yüzeyler ve yumuşak gölgeler genç kitleye hitap edecek şekilde seçildi.
+- Kart bileşenleri `transform-style: preserve-3d` ve Sass modülleriyle oluşturulan ışık efektleri sayesinde 3D hissi verir.
+- Tamamen responsive yapı sayesinde masaüstü, tablet ve mobil tarayıcılarda sorunsuz deneyim sunar.
+
+İyi eğlenceler! 🎮

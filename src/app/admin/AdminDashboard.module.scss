@@ -1,0 +1,396 @@
+.page {
+  min-height: 100vh;
+  padding: clamp(1.6rem, 4vw, 3.5rem) clamp(1.2rem, 4vw, 3.5rem) 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.8rem, 3vw, 2.6rem);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: flex-end;
+}
+
+.header h1 {
+  margin: 0;
+  font-family: var(--font-display, inherit);
+  font-size: clamp(2rem, 5vw, 2.6rem);
+}
+
+.header p {
+  margin: 0.6rem 0 0;
+  max-width: 48ch;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.6;
+}
+
+.backLink {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #fff;
+  text-decoration: none;
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.backLink:hover,
+.backLink:focus-visible {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.formCard {
+  background: rgba(15, 10, 46, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 24px;
+  padding: clamp(1.6rem, 4vw, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 40px rgba(8, 5, 30, 0.55);
+}
+
+.formHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.formHeader h2 {
+  margin: 0;
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
+}
+
+.badge {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.feedback {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+.feedbackSuccess {
+  background: rgba(110, 224, 199, 0.12);
+  color: #8df0d3;
+  border: 1px solid rgba(110, 224, 199, 0.4);
+}
+
+.feedbackError {
+  background: rgba(255, 143, 130, 0.14);
+  color: #ffb0a5;
+  border: 1px solid rgba(255, 143, 130, 0.35);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field label {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.field input,
+.field textarea {
+  background: rgba(6, 4, 28, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  padding: 0.75rem 0.95rem;
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.32);
+  box-shadow: 0 0 0 3px rgba(123, 108, 255, 0.35);
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.previewRow {
+  display: flex;
+  gap: 1.4rem;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.previewCard {
+  flex: 1 1 220px;
+  min-width: 220px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 20px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  text-align: center;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.previewCard strong {
+  font-size: 1rem;
+}
+
+.previewCard p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.previewPlaceholder {
+  display: block;
+  padding: 1.6rem 1rem;
+  border-radius: 14px;
+  background: rgba(10, 6, 40, 0.6);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.formButtons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.8rem;
+  min-width: 180px;
+}
+
+.primaryButton,
+.ghostButton,
+.linkButton,
+.dangerButton {
+  border: none;
+  border-radius: 999px;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: transform 0.25s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #7366ff, #ff8ac3);
+  color: #0f0a2d;
+  box-shadow: 0 14px 32px rgba(118, 104, 255, 0.35);
+}
+
+.primaryButton:hover,
+.primaryButton:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(118, 104, 255, 0.45);
+}
+
+.ghostButton {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.ghostButton:hover,
+.ghostButton:focus-visible {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.listSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.listHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.listHeader h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.searchInput {
+  background: rgba(6, 4, 28, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 0.6rem 1rem;
+  color: #fff;
+  min-width: 220px;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.emptyState {
+  margin: 0;
+  padding: 1.4rem 1rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.65);
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.2rem;
+}
+
+.card {
+  background: rgba(15, 10, 46, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  box-shadow: 0 16px 32px rgba(8, 5, 30, 0.4);
+}
+
+.cardImage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1rem;
+}
+
+.cardImage img {
+  object-fit: contain;
+  padding: 1.2rem;
+}
+
+.cardBody {
+  padding: 0 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cardBody h4 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.cardBody p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0 1.1rem 1.1rem;
+}
+
+.linkButton {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.linkButton:hover,
+.linkButton:focus-visible {
+  background: rgba(255, 255, 255, 0.24);
+  transform: translateY(-1px);
+}
+
+.dangerButton {
+  background: rgba(255, 118, 118, 0.14);
+  color: #ff9f9a;
+  border: 1px solid rgba(255, 118, 118, 0.3);
+}
+
+.dangerButton:hover,
+.dangerButton:focus-visible {
+  background: rgba(255, 118, 118, 0.28);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 880px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .listHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchInput {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .previewRow {
+    flex-direction: column;
+  }
+
+  .formButtons {
+    flex-direction: row;
+    justify-content: stretch;
+  }
+
+  .primaryButton,
+  .ghostButton {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+.previewImage {
+  display: block;
+  margin: 0 auto;
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
+.cardImg {
+  object-fit: contain;
+}

@@ -158,6 +158,9 @@ export default function LandingPage({ terms }: LandingPageProps) {
       setLocked(false);
       return;
     }
+    if (firstCard.isMatched && secondCard.isMatched) {
+      return;
+    }
 
     const isMatch = firstCard.matchId === secondCard.matchId;
     let timeout: ReturnType<typeof setTimeout> | undefined;
