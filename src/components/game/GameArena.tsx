@@ -132,6 +132,7 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
 
   const popupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const playersRef = useRef<Player[]>(players);
+  const pendingMismatchRef = useRef<{ ids: string[]; nextIndex: number } | null>(null);
 
   const specialDeck = useMemo<Term[]>(
     () =>
@@ -158,6 +159,22 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
         return a.originalIndex - b.originalIndex;
       });
   }, [players]);
+
+  const resolvePendingMismatch = useCallback(() => {
+    const pending = pendingMismatchRef.current;
+    if (!pending) {
+      return;
+    }
+    setCards((prev) =>
+      prev.map((card) =>
+        pending.ids.includes(card.id) ? { ...card, isFlipped: false } : card
+      )
+    );
+    setSelectedIds([]);
+    setActiveIndex(pending.nextIndex);
+    setLocked(false);
+    pendingMismatchRef.current = null;
+  }, [setActiveIndex, setCards, setLocked, setSelectedIds]);
 
   const clearTurnPopup = useCallback(() => {
     if (popupTimerRef.current) {
@@ -270,6 +287,7 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
         )
       );
       setMatches((prev) => prev + 1);
+      pendingMismatchRef.current = null;
       timeout = setTimeout(() => {
         setSelectedIds([]);
         setLocked(false);
@@ -278,32 +296,16 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
       const mismatchIds = [...selectedIds];
       const totalPlayers = playersSnapshot.length;
       if (totalPlayers === 0) {
+        pendingMismatchRef.current = { ids: mismatchIds, nextIndex: activeIndex };
         timeout = setTimeout(() => {
-          setCards((prev) =>
-            prev.map((card) =>
-              mismatchIds.includes(card.id)
-                ? { ...card, isFlipped: false }
-                : card
-            )
-          );
-          setSelectedIds([]);
-          setLocked(false);
+          resolvePendingMismatch();
         }, 3000);
       } else {
         const nextIndex = (activeIndex + 1) % totalPlayers;
         const nextPlayer = playersSnapshot[nextIndex];
+        pendingMismatchRef.current = { ids: mismatchIds, nextIndex };
         displayTurnPopup(nextPlayer, {
-          onComplete: () => {
-            setCards((prev) =>
-              prev.map((card) =>
-                mismatchIds.includes(card.id)
-                  ? { ...card, isFlipped: false }
-                  : card
-              )
-            );
-            setSelectedIds([]);
-            setActiveIndex(nextIndex);
-          },
+          onComplete: resolvePendingMismatch,
         });
       }
     }
@@ -313,7 +315,7 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
         clearTimeout(timeout);
       }
     };
-  }, [selectedIds, cards, activeIndex, players.length, status, displayTurnPopup]);
+  }, [selectedIds, cards, activeIndex, players.length, status, displayTurnPopup, resolvePendingMismatch]);
 
   useEffect(() => {
     if (status === "playing" && pairCount > 0 && matches >= pairCount) {
@@ -361,6 +363,12 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
     if (locked || status !== "playing") {
       return;
     }
+    if (pendingMismatchRef.current) {
+      resolvePendingMismatch();
+    }
+    if (turnPopup) {
+      clearTurnPopup();
+    }
     setCards((prev) => {
       const target = prev.find((card) => card.id === cardId);
       if (!target || target.isMatched || target.isFlipped) {
@@ -377,6 +385,7 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
 
   const clearBoardState = () => {
     clearTurnPopup();
+    pendingMismatchRef.current = null;
     setCards([]);
     setMatches(0);
     setSelectedIds([]);
