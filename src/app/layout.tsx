@@ -1,18 +1,8 @@
 import type { Metadata } from "next";
-import { Poppins, Lilita_One } from "next/font/google";
 import "./globals.scss";
 
-const bodyFont = Poppins({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["400", "500", "600", "700"],
-});
-
-const displayFont = Lilita_One({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-display",
-});
+const bodyFontClass = "font-sans-root";
+const displayFontClass = "font-display-root";
 
 export const metadata: Metadata = {
   title: "Siyer Kart Eşleştirme",
@@ -27,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
-      <body className={`${bodyFont.variable} ${displayFont.variable}`}>
+      <body className={`${bodyFontClass} ${displayFontClass}`}>
         {children}
       </body>
     </html>

@@ -49,3 +49,12 @@ textarea {
   background: rgba(137, 92, 255, 0.65);
   color: #fff;
 }
+
+
+.font-sans-root {
+  --font-sans: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+.font-display-root {
+  --font-display: "Trebuchet MS", "Segoe UI", sans-serif;
+}

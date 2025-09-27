@@ -153,8 +153,11 @@
 .aliasButton {
   background: rgba(255, 255, 255, 0.12);
   color: #fff;
-  padding: 0.6rem 1.2rem;
+  padding: 0.6rem 1rem;
   font-size: 0.85rem;
+  border: none;
+  border-radius: 999px;
+  transition: background 0.3s ease;
 }
 
 .aliasButton:hover,
@@ -175,6 +178,7 @@
   display: flex;
   justify-content: center;
   gap: 1.4rem;
+  flex-wrap: wrap;
 }
 
 .previewCard {
@@ -320,13 +324,19 @@
 
 .playerRow {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr;
   align-items: center;
   gap: 0.8rem;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 18px;
-  padding: 0.75rem 0.9rem;
+  padding: 0.75rem 0.9rem 0.9rem;
+}
+
+.aliasButton {
+  grid-column: 1 / -1;
+  justify-self: stretch;
+  margin-top: 0.6rem;
 }
 
 .playerBadge {
@@ -378,14 +388,14 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 1.6rem;
+  gap: 1.2rem;
   background: rgba(8, 5, 36, 0.58);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: var(--radius-xl);
-  padding: clamp(1.6rem, 4vw, 2.8rem);
-  backdrop-filter: blur(16px);
+  padding: clamp(1.4rem, 4vw, 2.6rem);
+  backdrop-filter: blur(18px);
   box-shadow: var(--shadow-soft);
-  z-index: 1;
+  min-height: calc(100vh - clamp(2rem, 6vw, 4rem));
 }
 
 .scoreRow {
@@ -456,25 +466,24 @@
 }
 
 .statusLine {
-  margin: 0;
+  margin: auto 0 0;
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.78);
 }
 
 .board {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: clamp(1rem, 2vw, 1.6rem);
+  gap: clamp(0.5rem, 1.2vw, 0.9rem);
   justify-items: center;
-  width: 100%;
-  max-width: 960px;
+  width: min(100%, 900px);
   margin: 0 auto;
   padding: clamp(0.6rem, 2vw, 1.2rem);
-  background: rgba(8, 4, 32, 0.5);
+  background: rgba(3, 1, 20, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  align-content: start;
 }
 
 .gameControls {
@@ -485,13 +494,14 @@
 }
 
 .overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: rgba(8, 5, 36, 0.82);
   backdrop-filter: blur(10px);
   display: grid;
   place-items: center;
-  border-radius: inherit;
+  border-radius: var(--radius-xl);
+  z-index: 7;
 }
 
 .overlayCard {
@@ -566,11 +576,28 @@
   }
 
   .board {
-    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(clamp(66px, 24vw, 110px), 1fr));
   }
 
   .gameArea {
     padding: 1.1rem;
+  }
+
+  .previewCards {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .previewCard {
+    width: min(220px, 80vw);
+    height: auto;
+    padding: 1.1rem;
+  }
+
+  .previewCard img {
+    width: clamp(96px, 55vw, 140px);
+    height: auto;
   }
 }
 .gamePage {
@@ -659,22 +686,25 @@
 }
 
 .gameArea {
+  flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 1.4rem;
+  align-items: center;
+  justify-content: center;
   background: rgba(10, 6, 44, 0.78);
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 28px;
   padding: clamp(1.2rem, 3vw, 2.2rem);
   box-shadow: 0 26px 60px rgba(4, 2, 24, 0.55);
   backdrop-filter: blur(18px);
+  min-height: clamp(320px, 60vh, 680px);
 }
 
 .scorePanel {
+  width: 100%;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 22px;
-  padding: 1.2rem 1.2rem 1.4rem;
+  padding: 1.1rem 1.2rem 1.3rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -793,12 +823,12 @@
 }
 
 .turnPopup {
-  position: absolute;
+  position: fixed;
   inset: 0;
   display: grid;
   place-items: center;
   pointer-events: none;
-  z-index: 3;
+  z-index: 6;
 }
 
 .turnPopupCard {
@@ -910,13 +940,80 @@
 
 @media (max-width: 540px) {
   .board {
-    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(clamp(60px, 28vw, 96px), 1fr));
+    gap: 0.6rem;
   }
 
   .gameArea {
     padding: 1rem;
     border-radius: 22px;
   }
+
+  .previewCard {
+    width: min(200px, 86vw);
+    padding: 0.9rem;
+  }
 }
 
+
+
+
+.backButton {
+  border: none;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.backButton:hover,
+.backButton:focus-visible {
+  background: rgba(255, 255, 255, 0.24);
+  transform: translateY(-2px);
+}
+.playHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.playHeader .progressTrack {
+  flex: 1;
+  min-width: 200px;
+}
+
+.backButton {
+  border: none;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.backButton:hover,
+.backButton:focus-visible {
+  background: rgba(255, 255, 255, 0.24);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 680px) {
+  .playHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .backButton {
+    width: 100%;
+    text-align: center;
+  }
+}
