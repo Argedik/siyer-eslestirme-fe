@@ -160,6 +160,17 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
       });
   }, [players]);
 
+  const totalCards = cards.length > 0 ? cards.length : pairCount * 2;
+  const boardColumns = useMemo(() => {
+    if (totalCards <= 4) return 2;
+    if (totalCards <= 6) return 3;
+    if (totalCards <= 12) return 4;
+    return 5;
+  }, [totalCards]);
+  const boardStyle = useMemo(() => ({
+    gridTemplateColumns: `repeat(${boardColumns}, minmax(0, 1fr))`,
+  }), [boardColumns]);
+
   const resolvePendingMismatch = useCallback(() => {
     const pending = pendingMismatchRef.current;
     if (!pending) {
@@ -174,7 +185,7 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
     setActiveIndex(pending.nextIndex);
     setLocked(false);
     pendingMismatchRef.current = null;
-  }, [setActiveIndex, setCards, setLocked, setSelectedIds]);
+  }, [setCards, setSelectedIds, setLocked]);
 
   const clearTurnPopup = useCallback(() => {
     if (popupTimerRef.current) {
@@ -434,16 +445,17 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
 
   return (
     <div
-      className={classNames(styles.gamePage, styles.page)}
+      className={styles.gamePage}
       style={backgroundImage ? { backgroundImage: `url(${backgroundImage})` } : undefined}
     >
       <div className={styles.gamePageMask} />
       <div className={styles.gameWrapper}>
+        {step === "setup" && (
         <header className={styles.gameHeader}>
           <div>
             <span className={styles.gameHeaderEyebrow}>Siyer kart arenası</span>
             <h1 className={styles.gameHeaderTitle}>
-              Oyunu {step === "setup" ? "kur" : "oyna"}
+              Oyunu kur
             </h1>
             <p className={styles.gameHeaderSubtitle}>
               Tam ekran deneyim için kart çiftlerini seç, arkadaşlarına linki gönder ve rekabete başla.
@@ -458,6 +470,7 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
             </Link>
           </div>
         </header>
+      )}
 
         {step === "setup" ? (
           <section className={styles.panel}>
@@ -537,11 +550,8 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
 <section className={styles.gameShell}>
           <div className={styles.playHeader}>
             <button type="button" className={styles.backButton} onClick={resetToSetup}>
-              ← Ayarlara dön
+              ←
             </button>
-            <div className={styles.progressTrack}>
-              <div className={styles.progressFill} style={{ width: `${progress}%` }} />
-            </div>
           </div>
 
           <div className={styles.scorePanel}>
@@ -572,7 +582,8 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
           </div>
 
           <div className={styles.gameArea}>
-            <div className={styles.board}>
+            <div className={styles.boardContainer}>
+              <div className={styles.board} style={boardStyle}>
               {cards.map((card) => (
                 <MemoryCard
                   key={card.id}
@@ -581,6 +592,7 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
                   onSelect={() => handleCardClick(card.id)}
                 />
               ))}
+            </div>
             </div>
           </div>
 

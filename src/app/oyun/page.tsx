@@ -25,9 +25,10 @@ export default async function GamePage() {
     readImageFiles(path.join("resimler", "kartlar")),
   ]);
 
+  const defaultBackground = '/resimler/arkaplan/siyer%20eşleştirme.png';
   const backgroundImage = backgroundFiles[0]
     ? `/resimler/arkaplan/${backgroundFiles[0]}`
-    : undefined;
+    : defaultBackground;
   const specialImages = specialFiles.map((file) => `/resimler/kartlar/${file}`);
 
   return (
