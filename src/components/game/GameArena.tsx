@@ -533,98 +533,107 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
             <p className={styles.tip}>Bağlantıyı paylaş; herkes tarayıcısından bağlanarak takma adını girebilir.</p>
           </section>
         ) : (
-          <section className={styles.gameShell}>
-            <div className={styles.gameLayout}>
-              <div className={styles.gameArea}>
-                <div className={styles.progressTrack}>
-                  <div className={styles.progressFill} style={{ width: `${progress}%` }} />
-                </div>
-                <p className={styles.statusLine}>{statusLine}</p>
-                <div className={styles.board}>
-                  {cards.map((card) => (
-                    <MemoryCard
-                      key={card.id}
-                      card={card}
-                      disabled={locked || status !== "playing"}
-                      onSelect={() => handleCardClick(card.id)}
-                    />
-                  ))}
-                </div>
+          
+<section className={styles.gameShell}>
+          <div className={styles.playHeader}>
+            <button type="button" className={styles.backButton} onClick={resetToSetup}>
+              ← Ayarlara dön
+            </button>
+            <div className={styles.progressTrack}>
+              <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+            </div>
+          </div>
+
+          <div className={styles.scorePanel}>
+            <div className={styles.scoreHeader}>
+              <h3>Skor sıralaması</h3>
+            </div>
+            <ol className={styles.scoreList}>
+              {ranking.map((player, position) => (
+                <li
+                  key={player.id}
+                  className={classNames(
+                    styles.scoreItem,
+                    rankingClass(position),
+                    player.originalIndex === activeIndex && styles.scoreActive,
+                    turnPopup?.name === player.name && styles.scoreIncoming
+                  )}
+                >
+                  <span className={styles.rankIcon} aria-hidden>
+                    {position < 3 ? "★" : ""}
+                  </span>
+                  <div className={styles.scoreInfo}>
+                    <span className={styles.playerName}>{player.name}</span>
+                    <span className={styles.playerScore}>{player.score} eşleşme</span>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div className={styles.gameArea}>
+            <div className={styles.board}>
+              {cards.map((card) => (
+                <MemoryCard
+                  key={card.id}
+                  card={card}
+                  disabled={locked || status !== "playing"}
+                  onSelect={() => handleCardClick(card.id)}
+                />
+              ))}
+            </div>
+          </div>
+
+          <p className={styles.statusLine}>{statusLine}</p>
+
+          <div className={styles.gameControls}>
+            <button type="button" className={styles.ghostButton} onClick={resetToSetup}>
+              Ayarları değiştir
+            </button>
+            <button type="button" className={styles.primaryButton} onClick={startGame}>
+              Tekrar oynat
+            </button>
+          </div>
+
+          {turnPopup && status === "playing" && (
+            <div className={styles.turnPopup}>
+              <div
+                className={styles.turnPopupCard}
+                style={{ borderColor: turnPopup.color, boxShadow: `0 18px 48px ${turnPopup.color}44` }}
+              >
+                <span className={styles.turnLabel}>Sıradaki oyuncu</span>
+                <strong>{turnPopup.name}</strong>
               </div>
-              <aside className={styles.scorePanel}>
-                <div className={styles.scoreHeader}>
-                  <h3>Skor sıralaması</h3>
-                </div>
-                <ol className={styles.scoreList}>
+            </div>
+          )}
+
+          {status === "complete" && (
+            <div className={styles.overlay}>
+              <div className={styles.overlayCard}>
+                <h3>🎉 Tüm kartlar açıldı!</h3>
+                <p>İşte final sıralaması:</p>
+                <ol className={classNames(styles.finalRanking, styles.scoreList)}>
                   {ranking.map((player, position) => (
                     <li
-                      key={player.id}
-                      className={classNames(
-                        styles.scoreItem,
-                        rankingClass(position),
-                        player.originalIndex === activeIndex && styles.scoreActive,
-                        turnPopup?.name === player.name && styles.scoreIncoming
-                      )}
+                      key={`final-${player.id}`}
+                      className={classNames(styles.finalRankItem, rankingClass(position))}
                     >
                       <span className={styles.rankIcon} aria-hidden>
                         {position < 3 ? "★" : ""}
                       </span>
-                      <div className={styles.scoreInfo}>
-                        <span className={styles.playerName}>{player.name}</span>
-                        <span className={styles.playerScore}>{player.score} eşleşme</span>
-                      </div>
+                      <span className={styles.finalRankName}>{player.name}</span>
+                      <span className={styles.finalRankScore}>{player.score} eşleşme</span>
                     </li>
                   ))}
                 </ol>
-              </aside>
-            </div>
-            <div className={styles.gameControls}>
-              <button type="button" className={styles.ghostButton} onClick={resetToSetup}>
-                Ayarları değiştir
-              </button>
-              <button type="button" className={styles.primaryButton} onClick={startGame}>
-                Tekrar oynat
-              </button>
-            </div>
-
-            {turnPopup && status === "playing" && (
-              <div className={styles.turnPopup}>
-                <div
-                  className={styles.turnPopupCard}
-                  style={{ borderColor: turnPopup.color, boxShadow: `0 18px 48px ${turnPopup.color}44` }}
-                >
-                  <span className={styles.turnLabel}>Sıradaki oyuncu</span>
-                  <strong>{turnPopup.name}</strong>
-                </div>
+                <button type="button" className={styles.primaryButton} onClick={startGame}>
+                  Yeni tur başlat
+                </button>
               </div>
-            )}
+            </div>
+          )}
+        </section>
 
-            {status === "complete" && (
-              <div className={styles.overlay}>
-                <div className={styles.overlayCard}>
-                  <h3>🎉 Tüm kartlar açıldı!</h3>
-                  <p>İşte final sıralaması:</p>
-                  <ol className={classNames(styles.finalRanking, styles.scoreList)}>
-                    {ranking.map((player, position) => (
-                      <li
-                        key={`final-${player.id}`}
-                        className={classNames(styles.finalRankItem, rankingClass(position))}
-                      >
-                        <span className={styles.rankIcon} aria-hidden>
-                          {position < 3 ? "★" : ""}
-                        </span>
-                        <span className={styles.finalRankName}>{player.name}</span>
-                        <span className={styles.finalRankScore}>{player.score} eşleşme</span>
-                      </li>
-                    ))}
-                  </ol>
-                  <button type="button" className={styles.primaryButton} onClick={startGame}>
-                    Yeni tur başlat
-                  </button>
-                </div>
-              </div>
-            )}
-          </section>
         )}
       </div>
     </div>

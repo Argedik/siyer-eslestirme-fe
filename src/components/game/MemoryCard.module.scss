@@ -1,6 +1,6 @@
 .card {
   position: relative;
-  width: clamp(108px, 18vw, 168px);
+  width: clamp(88px, 15vw, 140px);
   aspect-ratio: 3 / 4;
   border: none;
   background: transparent;
@@ -49,8 +49,8 @@
 }
 
 .front {
-  background: linear-gradient(145deg, rgba(125, 99, 255, 0.88), rgba(255, 149, 213, 0.9));
-  border: 1px solid rgba(255, 255, 255, 0.32);
+  background: linear-gradient(145deg, #ffb8f8, #8bb7ff);
+  border: 1px solid rgba(255, 255, 255, 0.42);
   position: relative;
 }
 
@@ -72,8 +72,8 @@
 }
 
 .back {
-  background: radial-gradient(circle at 20% 20%, rgba(32, 28, 88, 0.95), rgba(18, 12, 54, 0.96));
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: radial-gradient(circle at 25% 25%, rgba(40, 20, 90, 0.96), rgba(16, 10, 60, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.22);
   transform: rotateY(180deg);
   padding: 18px 16px;
   gap: 16px;
@@ -109,7 +109,7 @@
 }
 
 .matched .inner {
-  box-shadow: 0 0 42px rgba(110, 224, 199, 0.78);
+  box-shadow: 0 0 52px rgba(110, 224, 199, 0.82);
   animation: matchCelebrate 0.6s ease;
 }
 
@@ -124,13 +124,13 @@
 
 @media (max-width: 1024px) {
   .card {
-    width: clamp(95px, 22vw, 138px);
+    width: clamp(78px, 26vw, 118px);
   }
 }
 
 @media (max-width: 680px) {
   .card {
-    width: clamp(82px, 30vw, 110px);
+    width: clamp(66px, 34vw, 98px);
   }
 
   .inner {
