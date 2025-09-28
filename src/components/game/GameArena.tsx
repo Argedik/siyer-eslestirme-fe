@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { Term } from "@/lib/terms";
@@ -446,7 +447,7 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
   return (
     <div
       className={styles.gamePage}
-      style={backgroundImage ? { backgroundImage: `url(${backgroundImage})` } : undefined}
+      style={backgroundImage ? ({ ["--arena-bg-desktop" as const]: `url(${backgroundImage})` } as CSSProperties) : undefined}
     >
       <div className={styles.gamePageMask} />
       <div className={styles.gameWrapper}>

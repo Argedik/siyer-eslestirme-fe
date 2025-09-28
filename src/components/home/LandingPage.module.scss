@@ -479,7 +479,7 @@
   border: none;
   border-radius: 16px;
   align-content: start;
-  grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 18vw, 180px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(clamp(160px, 24vw, 240px), 1fr));
 }
 
 .gameControls {
@@ -608,12 +608,17 @@
   display: flex;
   flex-direction: column;
   gap: clamp(1.8rem, 4vw, 2.6rem);
-  background: center/cover no-repeat url('/resimler/arkaplan/siyer-eslestirme.png');
-  background-size: cover;
-  background-position: center;
+  --arena-bg-desktop: url('/resimler/arkaplan/siyer-eslestirme.png');
+  --arena-bg-current: var(--arena-bg-mobile, var(--arena-bg-desktop));
+  background-color: #0b0435;
+  background-image: var(--arena-bg-current);
+  background-position: center top;
   background-repeat: no-repeat;
+  background-size: cover;
   overflow: hidden;
+  isolation: isolate;
 }
+
 
 .gameWrapper {
   position: relative;
@@ -1016,5 +1021,11 @@
   .backButton {
     width: 100%;
     text-align: center;
+  }
+}
+
+@media (max-width: 680px) {
+  .gamePage {
+    --arena-bg-mobile: url('/resimler/arkaplan/siyer-eslestirme-yazisiz.jpg');
   }
 }
