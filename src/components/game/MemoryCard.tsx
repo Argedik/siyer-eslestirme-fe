@@ -35,7 +35,7 @@ export default function MemoryCard({ card, disabled, onSelect }: MemoryCardProps
       onClick={onSelect}
       disabled={disabled || isMatched}
       aria-pressed={isFlipped}
-      aria-label={isMatched ? `${term.title} eşleşti` : `${term.title} kartını aç`}
+      aria-label={isMatched ? `${term.title} eslesti` : `${term.title} kartini ac`}
       style={style}
     >
       <span className={styles.inner}>
@@ -44,8 +44,10 @@ export default function MemoryCard({ card, disabled, onSelect }: MemoryCardProps
           <span className={styles.question}>?</span>
         </span>
         <span className={classNames(styles.face, styles.back)}>
-          <span className={styles.imageWrap}>
-            <Image src={term.image} alt={term.title} width={130} height={130} />
+          <span className={styles.graphicWrap}>
+            <span className={styles.imageWrap}>
+              <Image src={term.image} alt={term.title} fill sizes="(max-width: 680px) 42vw, 260px" className={styles.termArt} />
+            </span>
           </span>
           <span className={styles.termTitle}>{term.title}</span>
         </span>
@@ -53,3 +55,4 @@ export default function MemoryCard({ card, disabled, onSelect }: MemoryCardProps
     </button>
   );
 }
+
