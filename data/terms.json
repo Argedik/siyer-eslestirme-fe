@@ -2,51 +2,59 @@
   {
     "id": "bedir-zaferi",
     "title": "Bedir Zaferi",
-    "description": "�sl�m tarihindeki ilk b�y�k sava��n d�n�m noktas�.",
-    "image": "/terms/bedir.svg"
+    "description": "İslam tarihindeki ilk büyük savaşın dönüm noktası.",
+    "image": "/resimler/kartlar/siyer001.png"
   },
   {
     "id": "hudeybiye-barisi",
-    "title": "Hudeybiye Bar���",
-    "description": "Mekke ile yap�lan bar�� anla�mas� stratejik bir nefes oldu.",
-    "image": "/terms/hudeybiye.svg"
+    "title": "Hudeybiye Barışı",
+    "description": "Mekke ile yapılan barış anlaşması stratejik bir nefes oldu.",
+    "image": "/resimler/kartlar/siyer002.png"
   },
   {
     "id": "hicret",
     "title": "Hicret",
-    "description": "M�sl�manlar�n Medineye g��� yeni bir ba�lang��t�.",
-    "image": "/terms/hicret.svg",
+    "description": "Müslümanların Medineye göçü yeni bir başlangıç.",
+    "image": "/resimler/kartlar/siyer003.png",
     "createdAt": "2025-09-24T19:14:26.989Z",
     "updatedAt": "2025-09-24T19:14:26.989Z"
   },
   {
     "id": "veda-hutbesi",
     "title": "Veda Hutbesi",
-    "description": "Hz. Peygamberin insanl��a evrensel mesaj�.",
-    "image": "/terms/veda.svg"
+    "description": "Hz. Peygamberin insanlığa evrensel mesaj.",
+    "image": "/resimler/kartlar/siyer004.png"
   },
   {
     "id": "akabe-biatlari",
-    "title": "Akabe Biatlar�",
-    "description": "Medineli m�minlerle yap�lan tarih� s�zle�me.",
-    "image": "/terms/akabe.svg"
+    "title": "Akabe Biatları",
+    "description": "Medineli müminlerle yapılan tarihi sözleşme.",
+    "image": "/resimler/kartlar/siyer005.png"
   },
   {
     "id": "duygusal-dayanisma",
-    "title": "Karde�lik Dayan��mas�",
-    "description": "Muhacirlerle Ensar aras�ndaki sa�lam ba�.",
-    "image": "/terms/kardeslik.svg"
+    "title": "Kardeşlik Dayanışması",
+    "description": "Muhacirlerle Ensar arasındaki sağlam bağ.",
+    "image": "/resimler/kartlar/siyer001.png"
   },
   {
     "id": "uhud-dersleri",
     "title": "Uhud Dersleri",
-    "description": "Strateji ve itaatin �nemini hat�rlatan �etin imtihan.",
-    "image": "/terms/uhud.svg"
+    "description": "Strateji ve itaatin önemini hatırlatan çetin imtihan.",
+    "image": "/resimler/kartlar/siyer002.png"
   },
   {
     "id": "suffa-mektebi",
     "title": "Suffa Mektebi",
-    "description": "Mescid-i Nebi de ilim halkas�.",
-    "image": "/terms/suffa.svg"
+    "description": "Mescid-i Nebi'de ilim halkası.",
+    "image": "/resimler/kartlar/siyer003.png"
+  },
+  {
+    "id": "test",
+    "title": "test",
+    "description": "deneme",
+    "image": "/resimler/kartlar/siyer1759351017837_vtynuj.png",
+    "createdAt": "2025-10-01T20:37:10.931Z",
+    "updatedAt": "2025-10-01T20:37:10.931Z"
   }
 ]

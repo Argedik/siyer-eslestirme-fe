@@ -19,23 +19,20 @@ async function readImageFiles(relativeDir: string): Promise<string[]> {
 }
 
 export default async function GamePage() {
-  const [terms, backgroundFiles, specialFiles] = await Promise.all([
+  const [terms, backgroundFiles] = await Promise.all([
     listTerms(),
     readImageFiles(path.join("resimler", "arkaplan")),
-    readImageFiles(path.join("resimler", "kartlar")),
   ]);
 
   const defaultBackground = '/resimler/arkaplan/siyer%20eşleştirme.png';
   const backgroundImage = backgroundFiles[0]
     ? `/resimler/arkaplan/${backgroundFiles[0]}`
     : defaultBackground;
-  const specialImages = specialFiles.map((file) => `/resimler/kartlar/${file}`);
 
   return (
     <GameArena
       terms={terms}
       backgroundImage={backgroundImage}
-      specialImages={specialImages}
     />
   );
 }

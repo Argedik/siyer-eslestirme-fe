@@ -33,7 +33,7 @@ const aliasNouns = [
   "Astronot",
 ];
 
-const SPECIAL_PAIR_TARGET = 5;
+const DEFAULT_PAIR_TARGET = 6;
 
 type Step = "setup" | "play";
 type GameStatus = "idle" | "playing" | "complete";
@@ -61,7 +61,6 @@ type TurnPopupOptions = {
 type GameArenaProps = {
   terms: Term[];
   backgroundImage?: string;
-  specialImages?: string[];
 };
 
 function classNames(...values: Array<string | false | undefined>): string {
@@ -109,11 +108,12 @@ function createDeck(pool: Term[], pairCount: number): MemoryCardData[] {
   return shuffle(doubled);
 }
 
-export default function GameArena({ terms, backgroundImage, specialImages = [] }: GameArenaProps) {
-  const maxPairs = useMemo(() => Math.max(2, Math.min(terms.length, 12)), [terms.length]);
+export default function GameArena({ terms, backgroundImage }: GameArenaProps) {
+  const maxPairs = useMemo(() => Math.min(terms.length, 12), [terms.length]);
+  const hasEnoughTerms = maxPairs >= 2;
   const [step, setStep] = useState<Step>("setup");
   const [playerCount, setPlayerCount] = useState(2);
-  const [pairCount, setPairCount] = useState(Math.min(maxPairs, SPECIAL_PAIR_TARGET));
+  const [pairCount, setPairCount] = useState(() => (hasEnoughTerms ? Math.min(maxPairs, DEFAULT_PAIR_TARGET) : 0));
   const [players, setPlayers] = useState<Player[]>(() =>
     Array.from({ length: 2 }, (_, index) => ({
       id: `player-${index}`,
@@ -134,21 +134,6 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
   const popupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const playersRef = useRef<Player[]>(players);
   const pendingMismatchRef = useRef<{ ids: string[]; nextIndex: number } | null>(null);
-
-  const specialDeck = useMemo<Term[]>(
-    () =>
-      specialImages
-        .slice(0, SPECIAL_PAIR_TARGET)
-        .map((src, index) => ({
-          id: `special-${index}`,
-          title: `Özel Kart ${index + 1}`,
-          description: "Oyuncular için özel kart görseli.",
-          image: src,
-        })),
-    [specialImages]
-  );
-
-  const shouldUseSpecialDeck = pairCount === SPECIAL_PAIR_TARGET && specialDeck.length >= SPECIAL_PAIR_TARGET;
 
   const ranking = useMemo<RankedPlayer[]>(() => {
     return players
@@ -255,10 +240,17 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
   }, [playerCount]);
 
   useEffect(() => {
-    if (pairCount > maxPairs) {
-      setPairCount(maxPairs);
-    }
-  }, [maxPairs, pairCount]);
+    setPairCount((prev) => {
+      if (!hasEnoughTerms) {
+        return 0;
+      }
+      const nextDefault = Math.min(maxPairs, DEFAULT_PAIR_TARGET);
+      if (prev === 0) {
+        return nextDefault;
+      }
+      return Math.min(prev, maxPairs);
+    });
+  }, [hasEnoughTerms, maxPairs]);
 
   useEffect(() => {
     if (selectedIds.length !== 2 || status !== "playing") {
@@ -422,8 +414,11 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
       score: 0,
     }));
 
-    const pool = shouldUseSpecialDeck ? specialDeck : terms;
-    const deck = createDeck(pool, pairCount);
+    if (!hasEnoughTerms) {
+      return;
+    }
+
+    const deck = createDeck(terms, pairCount);
 
     clearBoardState();
     setShowValidation(false);
@@ -493,21 +488,29 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
                 </div>
               </div>
               <div>
-                <span className={styles.label}>Kart çifti ({pairCount})</span>
-                <div className={styles.sliderRow}>
-                  <input
-                    className={styles.slider}
-                    type="range"
-                    min={2}
-                    max={maxPairs}
-                    value={pairCount}
-                    onChange={(event) => setPairCount(Number(event.target.value))}
-                  />
-                  <div className={styles.sliderInfo}>
-                    <span>{pairCount * 2} kart</span>
-                    <span>Maks. {maxPairs * 2} kart</span>
+                <span className={styles.label}>
+                  Kart çifti{hasEnoughTerms ? ` (${pairCount})` : ""}
+                </span>
+                {hasEnoughTerms ? (
+                  <div className={styles.sliderRow}>
+                    <input
+                      className={styles.slider}
+                      type="range"
+                      min={2}
+                      max={maxPairs}
+                      value={pairCount}
+                      onChange={(event) => setPairCount(Number(event.target.value))}
+                    />
+                    <div className={styles.sliderInfo}>
+                      <span>{pairCount * 2} kart</span>
+                      <span>Maks. {maxPairs * 2} kart</span>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className={styles.sliderInfo}>
+                    <span>Admin panelinden en az iki kart eklemelisin.</span>
+                  </div>
+                )}
               </div>
             </div>
             <div className={styles.playerList}>
@@ -531,20 +534,29 @@ export default function GameArena({ terms, backgroundImage, specialImages = [] }
             {showValidation && (
               <p className={styles.validation}>Başlamak için tüm oyuncular bir takma ad seçmeli.</p>
             )}
-            {shouldUseSpecialDeck && (
-              <p className={styles.specialNote}>
-                10 kart seçildiğinde oyun <strong>/resimler/kartlar</strong> klasöründeki özel görselleri kullanır.
-              </p>
-            )}
             <div className={styles.panelControls}>
-              <button type="button" className={styles.ghostButton} onClick={() => setPairCount(Math.min(maxPairs, SPECIAL_PAIR_TARGET))}>
+              <button
+                type="button"
+                className={styles.ghostButton}
+                onClick={() => hasEnoughTerms && setPairCount(Math.min(maxPairs, DEFAULT_PAIR_TARGET))}
+                disabled={!hasEnoughTerms}
+              >
                 Kartları sıfırla
               </button>
-              <button type="button" className={styles.primaryButton} onClick={startGame}>
+              <button
+                type="button"
+                className={styles.primaryButton}
+                onClick={startGame}
+                disabled={!hasEnoughTerms}
+              >
                 Oyunu Başlat
               </button>
             </div>
-            <p className={styles.tip}>Bağlantıyı paylaş; herkes tarayıcısından bağlanarak takma adını girebilir.</p>
+            {hasEnoughTerms ? (
+              <p className={styles.tip}>Bağlantıyı paylaş; herkes tarayıcısından bağlanarak takma adını girebilir.</p>
+            ) : (
+              <p className={styles.validation}>En az iki kart ekleyene kadar oyunu başlatamazsın. Admin panelinden kart ekle.</p>
+            )}
           </section>
         ) : (
           
