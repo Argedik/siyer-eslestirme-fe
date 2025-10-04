@@ -1,6 +1,10 @@
+
+
+
 .card {
 	position: relative;
-	width: min(100%, clamp(130px, 18vw, 190px));
+	width: min(100%, var(--card-width, clamp(var(--card-min-size, 150px), 18vw, var(--card-max-size, 320px))));
+	height: var(--card-height, auto);
 	aspect-ratio: 3 / 4;
 	border: none;
 	background: transparent;
@@ -8,6 +12,7 @@
 	perspective: 1200px;
 	transform: rotate(var(--tilt, 0deg));
 	transition: transform 0.35s ease, filter 0.35s ease;
+	max-width: 100%;
 }
 
 .card:disabled {
@@ -183,15 +188,21 @@
 	color: #10263c;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1280px) {
 	.card {
-		width: min(100%, clamp(160px, 38vw, 220px));
+		width: min(100%, clamp(150px, 20vw, 210px));
+	}
+}
+
+@media (max-width: 900px) {
+	.card {
+		width: min(100%, clamp(140px, 26vw, 190px));
 	}
 }
 
 @media (max-width: 680px) {
 	.card {
-		width: min(100%, clamp(150px, 46vw, 210px));
+		width: min(100%, clamp(130px, 46vw, 180px));
 	}
 
 	.inner {

@@ -130,10 +130,31 @@ export default function GameArena({ terms, backgroundImage }: GameArenaProps) {
   const [status, setStatus] = useState<GameStatus>("idle");
   const [showValidation, setShowValidation] = useState(false);
   const [turnPopup, setTurnPopup] = useState<TurnPopup | null>(null);
+  const [viewportWidth, setViewportWidth] = useState<number>(
+    typeof window === "undefined" ? 0 : window.innerWidth
+  );
+  const [viewportHeight, setViewportHeight] = useState<number>(
+    typeof window === "undefined" ? 0 : window.innerHeight
+  );
 
   const popupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const playersRef = useRef<Player[]>(players);
   const pendingMismatchRef = useRef<{ ids: string[]; nextIndex: number } | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const handleResize = () => {
+      setViewportWidth(window.innerWidth);
+      setViewportHeight(window.innerHeight);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const ranking = useMemo<RankedPlayer[]>(() => {
     return players
@@ -147,15 +168,117 @@ export default function GameArena({ terms, backgroundImage }: GameArenaProps) {
   }, [players]);
 
   const totalCards = cards.length > 0 ? cards.length : pairCount * 2;
-  const boardColumns = useMemo(() => {
+  const desiredColumns = useMemo(() => {
     if (totalCards <= 4) return 2;
     if (totalCards <= 6) return 3;
     if (totalCards <= 12) return 4;
     return 5;
   }, [totalCards]);
+  const responsiveColumns = useMemo(() => {
+    let columns = desiredColumns;
+    if (viewportWidth > 0) {
+      if (viewportWidth <= 640) {
+        columns = Math.min(columns, 2);
+      } else if (viewportWidth <= 900) {
+        columns = Math.min(columns, 3);
+      } else if (viewportWidth <= 1280) {
+        columns = Math.min(columns, 4);
+      }
+    }
+    return Math.max(2, columns);
+  }, [desiredColumns, viewportWidth]);
+
+  const rows = useMemo(() => Math.max(1, Math.ceil(totalCards / responsiveColumns)), [totalCards, responsiveColumns]);
+
+  const layoutPreset = useMemo(() => {
+    if (viewportWidth > 0 && viewportWidth <= 640) {
+      return { gap: 12, minWidth: 120, maxWidth: 180, sidebarOffset: 0 };
+    }
+    if (viewportWidth > 0 && viewportWidth <= 900) {
+      return { gap: 16, minWidth: 140, maxWidth: 220, sidebarOffset: 0 };
+    }
+    if (viewportWidth > 0 && viewportWidth <= 1280) {
+      return { gap: 18, minWidth: 150, maxWidth: 260, sidebarOffset: 0 };
+    }
+    return { gap: 22, minWidth: 170, maxWidth: 320, sidebarOffset: 360 };
+  }, [viewportWidth]);
+
+  const boardMetrics = useMemo(() => {
+    const columns = responsiveColumns;
+    const viewportW = viewportWidth || 1440;
+    const viewportH = viewportHeight || 900;
+    const ratio = 3 / 4;
+
+    const boardHeightTarget = Math.max(320, Math.min(viewportH * 0.58, viewportH - 180));
+    const paddingVertical = Math.max(16, viewportH * 0.02);
+    const reservedSpace = Math.max(240, viewportH * 0.35);
+    const maxBoardHeight = Math.max(260, viewportH - reservedSpace);
+    const boardHeight = Math.min(boardHeightTarget, maxBoardHeight);
+    const usableHeight = Math.max(220, boardHeight - paddingVertical * 2);
+
+    let rowGap = layoutPreset.gap;
+    const maxRowGap = usableHeight * 0.08;
+    rowGap = Math.min(Math.max(rowGap, 12), Math.max(12, maxRowGap));
+
+    const sidebarOffset = viewportW > 0 ? layoutPreset.sidebarOffset : 0;
+    const shellPadding = viewportW > 0 ? Math.max(72, viewportW * 0.06) : 0;
+    const availableWidth = Math.max(320, viewportW - sidebarOffset - shellPadding);
+    const paddingHorizontalBase = Math.max(16, viewportW * 0.02);
+    let paddingHorizontal = Math.min(paddingHorizontalBase, (availableWidth - 240) / 2);
+    paddingHorizontal = Math.max(16, paddingHorizontal);
+    const usableWidth = Math.max(220, availableWidth - paddingHorizontal * 2);
+
+    let cardWidth = (usableWidth - rowGap * Math.max(columns - 1, 0)) / columns;
+    cardWidth = Math.min(layoutPreset.maxWidth, Math.max(layoutPreset.minWidth, cardWidth));
+
+    let cardHeight = cardWidth / ratio;
+    const allowedCardHeight = (usableHeight - rowGap * Math.max(rows - 1, 0)) / rows;
+    if (Number.isFinite(allowedCardHeight)) {
+      cardHeight = Math.min(cardHeight, Math.max(120, allowedCardHeight));
+      cardWidth = cardHeight * ratio;
+    }
+
+    let boardContentWidth = cardWidth * columns + rowGap * Math.max(columns - 1, 0);
+    if (boardContentWidth > usableWidth) {
+      const scale = usableWidth / boardContentWidth;
+      if (scale < 1) {
+        cardWidth *= scale;
+        cardHeight = cardWidth / ratio;
+        boardContentWidth = cardWidth * columns + rowGap * Math.max(columns - 1, 0);
+      }
+    }
+
+    const boardWidth = availableWidth;
+
+    return {
+      gap: rowGap,
+      cardWidth,
+      cardHeight,
+      boardWidth,
+      boardHeight,
+      paddingHorizontal,
+      paddingVertical,
+    };
+  }, [layoutPreset, responsiveColumns, rows, viewportWidth, viewportHeight]);
+
   const boardStyle = useMemo(() => ({
-    gridTemplateColumns: `repeat(${boardColumns}, minmax(0, 1fr))`,
-  }), [boardColumns]);
+    gridTemplateColumns: `repeat(${responsiveColumns}, minmax(0, 1fr))`,
+    gap: `${boardMetrics.gap}px`,
+    justifyContent: "center",
+    alignContent: "center",
+  }), [responsiveColumns, boardMetrics.gap]);
+
+  const boardContainerStyle = useMemo(() => ({
+    width: "100%",
+    height: `${boardMetrics.boardHeight}px`,
+    padding: `${boardMetrics.paddingVertical}px ${boardMetrics.paddingHorizontal}px`,
+    "--card-width": `${boardMetrics.cardWidth}px`,
+    "--card-height": `${boardMetrics.cardHeight}px`,
+    "--card-min-size": `${boardMetrics.cardWidth}px`,
+    "--card-max-size": `${boardMetrics.cardWidth}px`,
+    "--board-gap": `${boardMetrics.gap}px`,
+    "--board-max-width": `${boardMetrics.boardWidth}px`,
+  }) as CSSProperties, [boardMetrics.boardWidth, boardMetrics.boardHeight, boardMetrics.paddingVertical, boardMetrics.paddingHorizontal, boardMetrics.cardWidth, boardMetrics.cardHeight, boardMetrics.gap]);
 
   const resolvePendingMismatch = useCallback(() => {
     const pending = pendingMismatchRef.current;
@@ -559,105 +682,113 @@ export default function GameArena({ terms, backgroundImage }: GameArenaProps) {
             )}
           </section>
         ) : (
-          
-<section className={styles.gameShell}>
-          <div className={styles.playHeader}>
-            <button type="button" className={styles.backButton} onClick={resetToSetup}>
-              ←
-            </button>
-          </div>
-
-          <div className={styles.scorePanel}>
-            <div className={styles.scoreHeader}>
-              <h3>Skor sıralaması</h3>
+          <section className={styles.gameShell}>
+            <div className={styles.playHeader}>
+              <button type="button" className={styles.backButton} onClick={resetToSetup}>
+                ←
+              </button>
             </div>
-            <ol className={styles.scoreList}>
-              {ranking.map((player, position) => (
-                <li
-                  key={player.id}
-                  className={classNames(
-                    styles.scoreItem,
-                    rankingClass(position),
-                    player.originalIndex === activeIndex && styles.scoreActive,
-                    turnPopup?.name === player.name && styles.scoreIncoming
-                  )}
-                >
-                  <span className={styles.rankIcon} aria-hidden>
-                    {position < 3 ? "★" : ""}
-                  </span>
-                  <div className={styles.scoreInfo}>
-                    <span className={styles.playerName}>{player.name}</span>
-                    <span className={styles.playerScore}>{player.score} eşleşme</span>
+
+            <div className={styles.gameLayout}>
+              <div className={styles.playColumn}>
+                <div className={styles.gameArea}>
+                  <div className={styles.boardContainer} style={boardContainerStyle}>
+                    <div className={styles.boardStage}>
+                      <div className={styles.turnStrip}>
+                        {turnPopup && status === "playing" && (
+                          <div className={styles.turnPopup}>
+                            <div
+                              className={styles.turnPopupCard}
+                              style={{ borderColor: turnPopup.color, boxShadow: `0 18px 48px ${turnPopup.color}44` }}
+                            >
+                              <span className={styles.turnLabel}>Sıradaki oyuncu</span>
+                              <strong>{turnPopup.name}</strong>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <div className={styles.boardWrap}>
+                        <div className={styles.board} style={boardStyle}>
+                          {cards.map((card) => (
+                            <MemoryCard
+                              key={card.id}
+                              card={card}
+                              disabled={locked || status !== "playing"}
+                              onSelect={() => handleCardClick(card.id)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </li>
-              ))}
-            </ol>
-          </div>
+                </div>
 
-          <div className={styles.gameArea}>
-            <div className={styles.boardContainer}>
-              <div className={styles.board} style={boardStyle}>
-              {cards.map((card) => (
-                <MemoryCard
-                  key={card.id}
-                  card={card}
-                  disabled={locked || status !== "playing"}
-                  onSelect={() => handleCardClick(card.id)}
-                />
-              ))}
-            </div>
-            </div>
-          </div>
+                <p className={styles.statusLine}>{statusLine}</p>
 
-          <p className={styles.statusLine}>{statusLine}</p>
-
-          <div className={styles.gameControls}>
-            <button type="button" className={styles.ghostButton} onClick={resetToSetup}>
-              Ayarları değiştir
-            </button>
-            <button type="button" className={styles.primaryButton} onClick={startGame}>
-              Tekrar oynat
-            </button>
-          </div>
-
-          {turnPopup && status === "playing" && (
-            <div className={styles.turnPopup}>
-              <div
-                className={styles.turnPopupCard}
-                style={{ borderColor: turnPopup.color, boxShadow: `0 18px 48px ${turnPopup.color}44` }}
-              >
-                <span className={styles.turnLabel}>Sıradaki oyuncu</span>
-                <strong>{turnPopup.name}</strong>
+                <div className={styles.gameControls}>
+                  <button type="button" className={styles.ghostButton} onClick={resetToSetup}>
+                    Ayarları değiştir
+                  </button>
+                  <button type="button" className={styles.primaryButton} onClick={startGame}>
+                    Tekrar oynat
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
 
-          {status === "complete" && (
-            <div className={styles.overlay}>
-              <div className={styles.overlayCard}>
-                <h3>🎉 Tüm kartlar açıldı!</h3>
-                <p>İşte final sıralaması:</p>
-                <ol className={classNames(styles.finalRanking, styles.scoreList)}>
+              <aside className={styles.scorePanel}>
+                <div className={styles.scoreHeader}>
+                  <h3>Skor sıralaması</h3>
+                </div>
+                <ol className={styles.scoreList}>
                   {ranking.map((player, position) => (
                     <li
-                      key={`final-${player.id}`}
-                      className={classNames(styles.finalRankItem, rankingClass(position))}
+                      key={player.id}
+                      className={classNames(
+                        styles.scoreItem,
+                        rankingClass(position),
+                        player.originalIndex === activeIndex && styles.scoreActive,
+                        turnPopup?.name === player.name && styles.scoreIncoming
+                      )}
                     >
                       <span className={styles.rankIcon} aria-hidden>
                         {position < 3 ? "★" : ""}
                       </span>
-                      <span className={styles.finalRankName}>{player.name}</span>
-                      <span className={styles.finalRankScore}>{player.score} eşleşme</span>
+                      <div className={styles.scoreInfo}>
+                        <span className={styles.playerName}>{player.name}</span>
+                        <span className={styles.playerScore}>{player.score} eşleşme</span>
+                      </div>
                     </li>
                   ))}
                 </ol>
-                <button type="button" className={styles.primaryButton} onClick={startGame}>
-                  Yeni tur başlat
-                </button>
-              </div>
+              </aside>
             </div>
-          )}
-        </section>
+
+            {status === "complete" && (
+              <div className={styles.overlay}>
+                <div className={styles.overlayCard}>
+                  <h3>🎉 Tüm kartlar açıldı!</h3>
+                  <p>İşte final sıralaması:</p>
+                  <ol className={classNames(styles.finalRanking, styles.scoreList)}>
+                    {ranking.map((player, position) => (
+                      <li
+                        key={`final-${player.id}`}
+                        className={classNames(styles.finalRankItem, rankingClass(position))}
+                      >
+                        <span className={styles.rankIcon} aria-hidden>
+                          {position < 3 ? "★" : ""}
+                        </span>
+                        <span className={styles.finalRankName}>{player.name}</span>
+                        <span className={styles.finalRankScore}>{player.score} eşleşme</span>
+                      </li>
+                    ))}
+                  </ol>
+                  <button type="button" className={styles.primaryButton} onClick={startGame}>
+                    Yeni tur başlat
+                  </button>
+                </div>
+              </div>
+            )}
+          </section>
 
         )}
       </div>
