@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { isHostValid } from '@/domain/host';
@@ -19,12 +20,14 @@ const mascots = [
 const imagesBaseUrl = process.env.NEXT_PUBLIC_IMAGES_BASE_URL || 'https://argedik.com/images';
 
 export default function LandingPage() {
+	const router = useRouter();
 	const [isHost, setIsHost] = useState(false);
 	const [joinDialogOpen, setJoinDialogOpen] = useState(false);
 	const [adminDialogOpen, setAdminDialogOpen] = useState(false);
 	const [gameReadyDialogOpen, setGameReadyDialogOpen] = useState(false);
 	const [gameCode, setGameCode] = useState('');
 	const [joinUrl, setJoinUrl] = useState('');
+	const [gameError, setGameError] = useState<string | null>(null);
 
 	useEffect(() => {
 		// Host durumunu kontrol et
@@ -38,7 +41,20 @@ export default function LandingPage() {
 	const handleGameCreated = (code: string, url: string) => {
 		setGameCode(code);
 		setJoinUrl(url);
+		setGameError(null); // Hata temizle
 		setGameReadyDialogOpen(true);
+	};
+
+	const handleGameError = (error: string) => {
+		setGameCode('');
+		setJoinUrl('');
+		setGameError(error); // Hata mesajını kaydet
+		setGameReadyDialogOpen(true); // Dialog'u aç (hata mesajı ile)
+	};
+
+	const handleNavigateToLobby = () => {
+		setGameReadyDialogOpen(false);
+		router.push(`/lobby/${gameCode}`);
 	};
 
 	return (
@@ -91,7 +107,10 @@ export default function LandingPage() {
 						</button>
 
 						{isHost && (
-							<CreateGameButton onGameCreated={handleGameCreated} />
+							<CreateGameButton 
+								onGameCreated={handleGameCreated}
+								onError={handleGameError}
+							/>
 						)}
 					</div>
 				</header>
@@ -128,9 +147,14 @@ export default function LandingPage() {
 
 			<GameReadyDialog 
 				isOpen={gameReadyDialogOpen} 
-				onClose={() => setGameReadyDialogOpen(false)}
+				onClose={() => {
+					setGameReadyDialogOpen(false);
+					setGameError(null); // Dialog kapanınca hatayı temizle
+				}}
 				code={gameCode}
 				joinUrl={joinUrl}
+				onNavigateToLobby={gameError ? undefined : handleNavigateToLobby}
+				error={gameError}
 			/>
 		</>
 	);
