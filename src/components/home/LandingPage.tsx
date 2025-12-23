@@ -52,9 +52,9 @@ export default function LandingPage() {
 		setGameReadyDialogOpen(true); // Dialog'u aç (hata mesajı ile)
 	};
 
-	const handleNavigateToLobby = () => {
+	const handleNavigateToGame = () => {
 		setGameReadyDialogOpen(false);
-		router.push(`/lobby/${gameCode}`);
+		router.push('/game');
 	};
 
 	return (
@@ -153,7 +153,7 @@ export default function LandingPage() {
 				}}
 				code={gameCode}
 				joinUrl={joinUrl}
-				onNavigateToLobby={gameError ? undefined : handleNavigateToLobby}
+				onNavigateToLobby={gameError ? undefined : handleNavigateToGame}
 				error={gameError}
 			/>
 		</>

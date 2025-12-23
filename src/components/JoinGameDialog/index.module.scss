@@ -20,14 +20,14 @@
 }
 
 .dialog {
-	background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: linear-gradient(135deg, #0a2e2b 0%, #0d4a45 50%, #0f5c56 100%);
+	border: 1px solid rgba(32, 178, 170, 0.3);
 	border-radius: 20px;
 	padding: 2rem;
 	max-width: 450px;
 	width: 90%;
 	position: relative;
-	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+	box-shadow: 0 20px 60px rgba(10, 46, 43, 0.6);
 	animation: slideUp 0.3s ease-out;
 }
 
@@ -107,18 +107,35 @@
 
 	&:focus {
 		outline: none;
-		border-color: #00d4ff;
-		background: rgba(0, 212, 255, 0.1);
-		box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.1);
+		border-color: #40e0d0;
+		background: rgba(64, 224, 208, 0.1);
+		box-shadow: 0 0 0 4px rgba(32, 178, 170, 0.2);
 	}
 }
 
 .error {
 	display: block;
 	color: #ff6b6b;
-	font-size: 0.85rem;
-	margin-top: 0.5rem;
+	font-size: 0.9rem;
+	margin-top: 0.75rem;
 	text-align: center;
+	padding: 0.75rem 1rem;
+	background: rgba(255, 107, 107, 0.1);
+	border: 1px solid rgba(255, 107, 107, 0.3);
+	border-radius: 8px;
+	animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+	0%, 100% {
+		transform: translateX(0);
+	}
+	10%, 30%, 50%, 70%, 90% {
+		transform: translateX(-8px);
+	}
+	20%, 40%, 60%, 80% {
+		transform: translateX(8px);
+	}
 }
 
 .actions {
@@ -132,20 +149,26 @@
 	padding: 0.875rem 1.5rem;
 	font-size: 1rem;
 	font-weight: 600;
-	background: linear-gradient(135deg, #00d4ff 0%, #0080ff 100%);
+	background: linear-gradient(135deg, #20b2aa 0%, #40e0d0 100%);
 	border: none;
 	border-radius: 12px;
-	color: #fff;
+	color: #0a2e2b;
 	cursor: pointer;
 	transition: all 0.3s;
 
 	&:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(0, 212, 255, 0.4);
+		box-shadow: 0 8px 20px rgba(32, 178, 170, 0.4);
 	}
 
 	&:active {
 		transform: translateY(0);
+	}
+
+	&:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+		transform: none;
 	}
 }
 

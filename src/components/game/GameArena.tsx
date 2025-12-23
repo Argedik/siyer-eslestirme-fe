@@ -7,7 +7,7 @@ import type { Term } from "@/lib/terms";
 import MemoryCard, { type MemoryCardData } from "@/components/game/MemoryCard";
 import styles from "../home/LandingPage.module.scss";
 
-const pastelPalette = ["#776bff", "#ff82b0", "#5ed1ff", "#ffe36e"];
+const pastelPalette = ["#20b2aa", "#40e0d0", "#48d1cc", "#7fffd4"];
 const aliasAdjectives = [
   "Galaktik",
   "Parildayan",

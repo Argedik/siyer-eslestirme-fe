@@ -44,15 +44,15 @@
 }
 
 .formCard {
-	background: rgba(15, 10, 46, 0.75);
-	border: 1px solid rgba(255, 255, 255, 0.16);
+	background: rgba(10, 46, 43, 0.75);
+	border: 1px solid rgba(32, 178, 170, 0.2);
 	border-radius: 24px;
 	padding: clamp(1.6rem, 4vw, 2.5rem);
 	display: flex;
 	flex-direction: column;
 	gap: 1.5rem;
 	backdrop-filter: blur(14px);
-	box-shadow: 0 18px 40px rgba(8, 5, 30, 0.55);
+	box-shadow: 0 18px 40px rgba(10, 46, 43, 0.55);
 }
 
 .formHeader {
@@ -121,11 +121,11 @@
 
 .field input,
 .field textarea {
-	background: rgba(6, 4, 28, 0.55);
-	border: 1px solid rgba(255, 255, 255, 0.18);
+	background: rgba(10, 46, 43, 0.5);
+	border: 1px solid rgba(32, 178, 170, 0.25);
 	border-radius: 14px;
 	padding: 0.75rem 0.95rem;
-	color: #ffffff;
+	color: #e0f7f5;
 	font-size: 0.95rem;
 }
 
@@ -136,8 +136,8 @@
 .field input:focus,
 .field textarea:focus {
 	outline: none;
-	border-color: rgba(255, 255, 255, 0.32);
-	box-shadow: 0 0 0 3px rgba(123, 108, 255, 0.35);
+	border-color: rgba(64, 224, 208, 0.5);
+	box-shadow: 0 0 0 3px rgba(32, 178, 170, 0.35);
 }
 
 .fullWidth {
@@ -179,10 +179,10 @@
 	display: block;
 	padding: 1.6rem 1rem;
 	border-radius: 14px;
-	background: rgba(10, 6, 40, 0.6);
-	border: 1px dashed rgba(255, 255, 255, 0.2);
+	background: rgba(10, 46, 43, 0.5);
+	border: 1px dashed rgba(32, 178, 170, 0.3);
 	font-size: 0.85rem;
-	color: rgba(255, 255, 255, 0.5);
+	color: rgba(224, 247, 245, 0.6);
 }
 
 .formButtons {
@@ -206,15 +206,15 @@
 }
 
 .primaryButton {
-	background: linear-gradient(135deg, #7366ff, #ff8ac3);
-	color: #0f0a2d;
-	box-shadow: 0 14px 32px rgba(118, 104, 255, 0.35);
+	background: linear-gradient(135deg, #20b2aa, #40e0d0);
+	color: #0a2e2b;
+	box-shadow: 0 14px 32px rgba(32, 178, 170, 0.35);
 }
 
 .primaryButton:hover,
 .primaryButton:focus-visible {
 	transform: translateY(-2px);
-	box-shadow: 0 20px 40px rgba(118, 104, 255, 0.45);
+	box-shadow: 0 20px 40px rgba(32, 178, 170, 0.45);
 }
 
 .ghostButton {
@@ -248,11 +248,11 @@
 }
 
 .searchInput {
-	background: rgba(6, 4, 28, 0.55);
-	border: 1px solid rgba(255, 255, 255, 0.18);
+	background: rgba(10, 46, 43, 0.5);
+	border: 1px solid rgba(32, 178, 170, 0.25);
 	border-radius: 999px;
 	padding: 0.6rem 1rem;
-	color: #fff;
+	color: #e0f7f5;
 	min-width: 220px;
 }
 
@@ -278,14 +278,14 @@
 }
 
 .card {
-	background: rgba(15, 10, 46, 0.65);
-	border: 1px solid rgba(255, 255, 255, 0.14);
+	background: rgba(10, 46, 43, 0.65);
+	border: 1px solid rgba(32, 178, 170, 0.2);
 	border-radius: 20px;
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
 	gap: 0.9rem;
-	box-shadow: 0 16px 32px rgba(8, 5, 30, 0.4);
+	box-shadow: 0 16px 32px rgba(10, 46, 43, 0.4);
 }
 
 .cardImage {
@@ -413,14 +413,14 @@
 }
 
 .uploadAreaDragOver {
-	border-color: #7366ff;
-	background: rgba(115, 102, 255, 0.1);
+	border-color: #40e0d0;
+	background: rgba(64, 224, 208, 0.1);
 	transform: scale(1.02);
 }
 
 .uploadAreaUploading {
-	border-color: #ff78b5;
-	background: rgba(255, 120, 181, 0.1);
+	border-color: #20b2aa;
+	background: rgba(32, 178, 170, 0.1);
 	cursor: not-allowed;
 }
 
@@ -460,7 +460,7 @@
 	width: 24px;
 	height: 24px;
 	border: 2px solid rgba(255, 255, 255, 0.3);
-	border-top: 2px solid #7366ff;
+	border-top: 2px solid #40e0d0;
 	border-radius: 50%;
 	animation: spin 1s linear infinite;
 	margin-bottom: 0.5rem;

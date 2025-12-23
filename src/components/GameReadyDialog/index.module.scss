@@ -20,14 +20,14 @@
 }
 
 .dialog {
-	background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-	border: 2px solid rgba(255, 215, 0, 0.3);
+	background: linear-gradient(135deg, #0a2e2b 0%, #0d4a45 50%, #0f5c56 100%);
+	border: 2px solid rgba(64, 224, 208, 0.4);
 	border-radius: 24px;
 	padding: 2.5rem;
 	max-width: 550px;
 	width: 90%;
 	position: relative;
-	box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6);
+	box-shadow: 0 25px 70px rgba(10, 46, 43, 0.7);
 	animation: slideUpBounce 0.5s ease-out;
 }
 
@@ -122,7 +122,7 @@
 	flex: 1;
 	font-size: 2rem;
 	font-weight: 700;
-	color: #00d4ff;
+	color: #40e0d0;
 	letter-spacing: 0.5rem;
 	text-align: center;
 }
@@ -138,21 +138,21 @@
 	padding: 0.5rem 1rem;
 	font-size: 0.875rem;
 	font-weight: 600;
-	background: linear-gradient(135deg, #00d4ff 0%, #0080ff 100%);
+	background: linear-gradient(135deg, #20b2aa 0%, #40e0d0 100%);
 	border: none;
 	border-radius: 8px;
-	color: #fff;
+	color: #0a2e2b;
 	cursor: pointer;
 	transition: all 0.3s;
 	white-space: nowrap;
 
 	&:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
+		box-shadow: 0 4px 12px rgba(32, 178, 170, 0.4);
 	}
 
 	&:disabled {
-		background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
+		background: linear-gradient(135deg, #48d1cc 0%, #20b2aa 100%);
 		cursor: default;
 	}
 }
@@ -180,16 +180,16 @@
 	padding: 0.875rem 2.5rem;
 	font-size: 1rem;
 	font-weight: 600;
-	background: linear-gradient(135deg, #00d4ff 0%, #0080ff 100%);
+	background: linear-gradient(135deg, #20b2aa 0%, #40e0d0 100%);
 	border: none;
 	border-radius: 12px;
-	color: #fff;
+	color: #0a2e2b;
 	cursor: pointer;
 	transition: all 0.3s;
 
 	&:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(0, 212, 255, 0.4);
+		box-shadow: 0 8px 20px rgba(32, 178, 170, 0.4);
 	}
 
 	&:active {

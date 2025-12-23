@@ -32,7 +32,7 @@ export interface CreateGameResult {
   /** Lobi/oyun kodu (örn: "K7") */
   code: string;
   /** Katılım URL'i (örn: "/join/K7") */
-  joinUrl: string;
+	joinUrl: string;
   /** Lobi ID */
   lobbyId: number;
   /** Tam lobi yanıtı (opsiyonel, ileride kullanılabilir) */
@@ -60,28 +60,28 @@ export async function createGame(
   });
 
   const code = lobby.code;
-  const joinUrl = `/join/${code}`;
+	const joinUrl = `/join/${code}`;
 
   // localStorage'a kaydet (ileride kullanılabilir)
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('current_game_code', code);
+	if (typeof window !== 'undefined') {
+		localStorage.setItem('current_game_code', code);
     localStorage.setItem('current_lobby_id', lobby.id.toString());
-  }
+	}
 
-  return {
-    code,
-    joinUrl,
+	return {
+		code,
+		joinUrl,
     lobbyId: lobby.id,
     lobby,
-  };
+	};
 }
 
 /**
  * Mevcut oyun kodunu temizle (oyun bitişi)
  */
 export function endGame(): void {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('current_game_code');
+	if (typeof window !== 'undefined') {
+		localStorage.removeItem('current_game_code');
     localStorage.removeItem('current_lobby_id');
-  }
+	}
 }

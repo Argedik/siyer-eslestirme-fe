@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { isValidCode, toCode, CODE_LEN } from '@/domain/game';
+import { getLobbyByCode } from '@/services/lobbyApi';
 import styles from './index.module.scss';
 
 interface JoinGameDialogProps {
@@ -13,12 +14,20 @@ interface JoinGameDialogProps {
 export default function JoinGameDialog({ isOpen, onClose }: JoinGameDialogProps) {
 	const [code, setCode] = useState('');
 	const [error, setError] = useState('');
+	const [isValidating, setIsValidating] = useState(false);
 	const router = useRouter();
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
-		if (isOpen && inputRef.current) {
-			inputRef.current.focus();
+		if (isOpen) {
+			// Popup açıldığında state'leri temizle
+			setCode('');
+			setError('');
+			setIsValidating(false);
+			// Input'a focus ver
+			if (inputRef.current) {
+				inputRef.current.focus();
+			}
 		}
 	}, [isOpen]);
 
@@ -36,10 +45,16 @@ export default function JoinGameDialog({ isOpen, onClose }: JoinGameDialogProps)
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value.toUpperCase().slice(0, CODE_LEN);
 		setCode(value);
-		setError('');
+		
+		// Gerçek zamanlı validation - sadece kod tamamlandığında kontrol et
+		if (value.length === CODE_LEN && !isValidCode(value)) {
+			setError('Türkçe karakterleri denebilirsiniz.');
+		} else {
+			setError('');
+		}
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
 		if (!code) {
@@ -48,15 +63,23 @@ export default function JoinGameDialog({ isOpen, onClose }: JoinGameDialogProps)
 		}
 
 		if (!isValidCode(code)) {
-			setError('Geçersiz kod formatı (2 hane, Q/W/X hariç A-Z)');
+			setError('Rakam Türkçe karakterleri denebilirsiniz.');
 			return;
 		}
 
+		setIsValidating(true);
+		setError('');
+
 		try {
 			const validCode = toCode(code);
-			router.push(`/lobby/${validCode}`);
+			// Backend'den lobi doğrulama
+			await getLobbyByCode(validCode);
+			// Doğru kod - oyun sayfasına git
+			router.push('/game');
 		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
+			// Yanlış kod - animasyonlu uyarı göster
+			setError('Lütfen adminin paylaştığı lobi kodunu giriniz');
+			setIsValidating(false);
 		}
 	};
 
@@ -85,6 +108,7 @@ export default function JoinGameDialog({ isOpen, onClose }: JoinGameDialogProps)
 							className={styles.input}
 							maxLength={CODE_LEN}
 							pattern="[A-PR-VY-Z]{2}"
+							title="Türkçe karakterleri denebilirsiniz."
 							autoComplete="off"
 						/>
 						{error && <span className={styles.error}>{error}</span>}
@@ -94,8 +118,8 @@ export default function JoinGameDialog({ isOpen, onClose }: JoinGameDialogProps)
 						<button type="button" onClick={onClose} className={styles.secondaryButton}>
 							İptal
 						</button>
-						<button type="submit" className={styles.primaryButton}>
-							Katıl
+						<button type="submit" className={styles.primaryButton} disabled={isValidating}>
+							{isValidating ? 'Kontrol Ediliyor...' : 'Katıl'}
 						</button>
 					</div>
 				</form>

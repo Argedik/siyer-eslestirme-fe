@@ -28,7 +28,7 @@
 	height: 32vw;
 	background: radial-gradient(
 		circle at 30% 30%,
-		rgba(255, 167, 214, 0.78),
+		rgba(64, 224, 208, 0.65),
 		transparent 70%
 	);
 	top: 6%;
@@ -40,7 +40,7 @@
 	height: 28vw;
 	background: radial-gradient(
 		circle at 70% 20%,
-		rgba(116, 140, 255, 0.72),
+		rgba(32, 178, 170, 0.6),
 		transparent 75%
 	);
 	bottom: 12%;
@@ -53,7 +53,7 @@
 	height: 20vw;
 	background: radial-gradient(
 		circle at 50% 50%,
-		rgba(255, 228, 148, 0.7),
+		rgba(72, 209, 204, 0.55),
 		transparent 65%
 	);
 	top: 40%;
@@ -75,11 +75,11 @@
 	font-size: clamp(2.5rem, 6vw, 3.75rem);
 	line-height: 1.05;
 	margin: 0;
-	text-shadow: 0 0 24px rgba(145, 108, 255, 0.45);
+	text-shadow: 0 0 24px rgba(32, 178, 170, 0.5);
 }
 
 .heroHighlight {
-	background: linear-gradient(90deg, #ffe36e 0%, #ff89c7 45%, #7bdcfb 100%);
+	background: linear-gradient(90deg, #7fffd4 0%, #40e0d0 45%, #20b2aa 100%);
 	-webkit-background-clip: text;
 	background-clip: text;
 	color: transparent;
@@ -109,73 +109,114 @@
 	font-weight: 600;
 	letter-spacing: 0.01em;
 	padding: 0.85rem 1.8rem;
-	transition: transform 0.25s ease, box-shadow 0.3s ease, background 0.3s ease,
-		color 0.3s ease;
+	transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 	cursor: pointer;
+	position: relative;
+	overflow: hidden;
 }
 
 .primaryButton {
-	background: linear-gradient(135deg, #7366ff 0%, #ff78b5 55%, #ffe36e 100%);
-	color: #0d0a2c;
-	box-shadow: 0 16px 40px rgba(118, 104, 255, 0.5);
+	background: linear-gradient(135deg, #20b2aa 0%, #40e0d0 50%, #48d1cc 100%);
+	color: #0a2e2b;
+	box-shadow: 0 16px 40px rgba(32, 178, 170, 0.5);
 	position: relative;
 	z-index: 2;
+}
+
+.primaryButton::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(135deg, #2dd4c4 0%, #50f0e0 50%, #58e1dc 100%);
+	opacity: 0;
+	transition: opacity 0.35s ease;
+	border-radius: 999px;
+	z-index: -1;
 }
 
 .primaryButton:hover,
 .primaryButton:focus-visible {
-	transform: translateY(-3px);
-	box-shadow: 0 22px 46px rgba(118, 104, 255, 0.65);
+	transform: translateY(-3px) scale(1.1);
+	box-shadow: 0 22px 46px rgba(32, 178, 170, 0.75),
+		0 0 30px rgba(64, 224, 208, 0.4);
+}
+
+.primaryButton:hover::before,
+.primaryButton:focus-visible::before {
+	opacity: 1;
 }
 
 .secondaryButton {
-	background: rgba(20, 15, 50, 0.85);
+	background: rgba(10, 46, 43, 0.85);
 	backdrop-filter: blur(8px);
 	color: var(--text-primary);
-	border: 1px solid rgba(255, 255, 255, 0.35);
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+	border: 1px solid rgba(32, 178, 170, 0.4);
+	box-shadow: 0 8px 24px rgba(10, 46, 43, 0.4);
 	position: relative;
 	z-index: 2;
 }
 
+.secondaryButton::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: rgba(13, 74, 69, 1);
+	opacity: 0;
+	transition: opacity 0.35s ease;
+	border-radius: 999px;
+	z-index: -1;
+}
+
 .secondaryButton:hover,
 .secondaryButton:focus-visible {
-	background: rgba(35, 25, 70, 0.9);
-	border-color: rgba(255, 255, 255, 0.45);
-	transform: translateY(-2px);
+	background: rgba(13, 74, 69, 0.95);
+	border-color: rgba(64, 224, 208, 0.7);
+	transform: translateY(-2px) scale(1.1);
+	box-shadow: 0 12px 32px rgba(10, 46, 43, 0.6),
+		0 0 25px rgba(32, 178, 170, 0.3);
+}
+
+.secondaryButton:hover::before,
+.secondaryButton:focus-visible::before {
+	opacity: 1;
 }
 
 .ghostButton {
-	background: rgba(20, 15, 50, 0.75);
+	background: rgba(10, 46, 43, 0.75);
 	backdrop-filter: blur(6px);
-	color: rgba(255, 255, 255, 0.9);
-	border: 1px solid rgba(255, 255, 255, 0.3);
-	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+	color: rgba(224, 247, 245, 0.9);
+	border: 1px solid rgba(32, 178, 170, 0.3);
+	box-shadow: 0 6px 20px rgba(10, 46, 43, 0.3);
 	position: relative;
 	z-index: 2;
 }
 
 .ghostButton:hover,
 .ghostButton:focus-visible {
-	background: rgba(35, 25, 70, 0.85);
-	color: #ffffff;
-	border-color: rgba(255, 255, 255, 0.5);
+	background: rgba(13, 74, 69, 0.85);
+	color: #e0f7f5;
+	border-color: rgba(64, 224, 208, 0.5);
 	transform: translateY(-2px);
 }
 
 .aliasButton {
-	background: rgba(255, 255, 255, 0.12);
-	color: #fff;
+	background: rgba(15, 92, 86, 0.6);
+	color: #e0f7f5;
 	padding: 0.6rem 1rem;
 	font-size: 0.85rem;
-	border: none;
+	border: 1px solid rgba(32, 178, 170, 0.4);
 	border-radius: 999px;
-	transition: background 0.3s ease;
+	transition: all 0.3s ease;
+	box-shadow: 0 2px 6px rgba(10, 46, 43, 0.3);
+	font-weight: 500;
 }
 
 .aliasButton:hover,
 .aliasButton:focus-visible {
-	background: rgba(255, 255, 255, 0.2);
+	background: rgba(20, 178, 170, 0.7);
+	border-color: #40e0d0;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 10px rgba(32, 178, 170, 0.4);
 }
 
 .preview {
@@ -224,15 +265,16 @@
 
 .panel {
 	position: relative;
-	background: rgba(20, 15, 50, 0.85);
-	border: 1px solid rgba(255, 255, 255, 0.2);
+	background: rgba(10, 46, 43, 0.92);
+	border: 1px solid rgba(32, 178, 170, 0.4);
 	border-radius: var(--radius-xl);
 	padding: clamp(1.8rem, 4vw, 2.8rem);
 	display: flex;
 	flex-direction: column;
 	gap: 1.8rem;
 	backdrop-filter: blur(20px);
-	box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+	box-shadow: 0 20px 50px rgba(10, 46, 43, 0.6),
+		inset 0 1px 0 rgba(64, 224, 208, 0.1);
 	z-index: 2;
 }
 
@@ -241,6 +283,9 @@
 	font-size: clamp(1.6rem, 3vw, 2rem);
 	font-family: var(--font-display, inherit);
 	letter-spacing: 0.01em;
+	color: #e0f7f5;
+	text-shadow: 0 2px 8px rgba(10, 46, 43, 0.6);
+	font-weight: 700;
 }
 
 .panelGrid {
@@ -254,8 +299,10 @@
 	font-size: 0.9rem;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
-	color: rgba(255, 255, 255, 0.6);
+	color: rgba(224, 247, 245, 0.85);
 	margin-bottom: 0.7rem;
+	font-weight: 600;
+	text-shadow: 0 1px 2px rgba(10, 46, 43, 0.5);
 }
 
 .pillRow {
@@ -265,23 +312,35 @@
 
 .pill {
 	padding: 0.6rem 1.1rem;
-	background: rgba(255, 255, 255, 0.08);
-	color: rgba(255, 255, 255, 0.75);
-	border: 1px solid rgba(255, 255, 255, 0.16);
+	background: rgba(13, 74, 69, 0.7);
+	color: rgba(224, 247, 245, 0.9);
+	border: 1px solid rgba(32, 178, 170, 0.4);
 	border-radius: 999px;
 	cursor: pointer;
-	transition: transform 0.2s ease, background 0.3s ease;
+	transition: all 0.3s ease;
+	box-shadow: 0 2px 8px rgba(10, 46, 43, 0.3);
+}
+
+.pill:hover {
+	background: rgba(15, 92, 86, 0.8);
+	border-color: rgba(64, 224, 208, 0.5);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(10, 46, 43, 0.4);
 }
 
 .pillActive {
 	background: linear-gradient(
-		120deg,
-		rgba(125, 109, 255, 0.9),
-		rgba(255, 139, 192, 0.95)
+		135deg,
+		#20b2aa 0%,
+		#40e0d0 50%,
+		#48d1cc 100%
 	);
-	color: #0d0a2c;
-	border-color: transparent;
+	color: #0a2e2b;
+	border-color: rgba(127, 255, 212, 0.5);
 	transform: translateY(-2px);
+	box-shadow: 0 6px 20px rgba(32, 178, 170, 0.5),
+		0 0 0 1px rgba(127, 255, 212, 0.3);
+	font-weight: 600;
 }
 
 .sliderRow {
@@ -295,9 +354,15 @@
 	width: 100%;
 	height: 10px;
 	border-radius: 999px;
-	background: rgba(255, 255, 255, 0.18);
+	background: rgba(13, 74, 69, 0.6);
 	outline: none;
 	cursor: pointer;
+	box-shadow: inset 0 2px 4px rgba(10, 46, 43, 0.4);
+	transition: background 0.3s ease;
+}
+
+.slider:hover {
+	background: rgba(15, 92, 86, 0.7);
 }
 
 .slider::-webkit-slider-thumb {
@@ -305,25 +370,26 @@
 	width: 22px;
 	height: 22px;
 	border-radius: 50%;
-	background: linear-gradient(135deg, #7366ff, #ff8ac3);
+	background: linear-gradient(135deg, #20b2aa, #40e0d0);
 	border: 2px solid rgba(255, 255, 255, 0.85);
-	box-shadow: 0 8px 18px rgba(118, 104, 255, 0.35);
+	box-shadow: 0 8px 18px rgba(32, 178, 170, 0.35);
 }
 
 .slider::-moz-range-thumb {
 	width: 22px;
 	height: 22px;
 	border-radius: 50%;
-	background: linear-gradient(135deg, #7366ff, #ff8ac3);
+	background: linear-gradient(135deg, #20b2aa, #40e0d0);
 	border: 2px solid rgba(255, 255, 255, 0.85);
-	box-shadow: 0 8px 18px rgba(118, 104, 255, 0.35);
+	box-shadow: 0 8px 18px rgba(32, 178, 170, 0.35);
 }
 
 .sliderInfo {
 	display: flex;
 	justify-content: space-between;
 	font-size: 0.85rem;
-	color: rgba(255, 255, 255, 0.65);
+	color: rgba(224, 247, 245, 0.8);
+	font-weight: 500;
 }
 
 .playerList {
@@ -337,10 +403,20 @@
 	grid-template-columns: auto 1fr;
 	align-items: center;
 	gap: 0.8rem;
-	background: rgba(255, 255, 255, 0.06);
-	border: 1px solid rgba(255, 255, 255, 0.15);
+	background: rgba(13, 74, 69, 0.6);
+	border: 1px solid rgba(32, 178, 170, 0.35);
 	border-radius: 18px;
 	padding: 0.75rem 0.9rem 0.9rem;
+	box-shadow: 0 2px 8px rgba(10, 46, 43, 0.3),
+		inset 0 1px 0 rgba(64, 224, 208, 0.1);
+	transition: all 0.3s ease;
+}
+
+.playerRow:hover {
+	background: rgba(15, 92, 86, 0.7);
+	border-color: rgba(64, 224, 208, 0.45);
+	box-shadow: 0 4px 12px rgba(10, 46, 43, 0.4),
+		inset 0 1px 0 rgba(64, 224, 208, 0.15);
 }
 
 .aliasButton {
@@ -356,22 +432,34 @@
 	place-items: center;
 	border-radius: 16px;
 	font-weight: 700;
-	color: #0d0a2c;
+	background: linear-gradient(135deg, #20b2aa 0%, #40e0d0 100%);
+	color: #0a2e2b;
+	box-shadow: 0 4px 12px rgba(32, 178, 170, 0.4),
+		inset 0 1px 0 rgba(127, 255, 212, 0.3);
+	border: 1px solid rgba(127, 255, 212, 0.4);
 }
 
 .playerInput {
-	background: rgba(8, 4, 32, 0.35);
-	border: 1px solid rgba(255, 255, 255, 0.18);
+	background: rgba(15, 92, 86, 0.5);
+	border: 1px solid rgba(32, 178, 170, 0.3);
 	border-radius: 12px;
 	padding: 0.7rem 0.9rem;
 	font-size: 0.95rem;
-	color: #ffffff;
+	color: #e0f7f5;
+	transition: all 0.3s ease;
+	box-shadow: inset 0 2px 4px rgba(10, 46, 43, 0.3);
+}
+
+.playerInput::placeholder {
+	color: rgba(224, 247, 245, 0.5);
 }
 
 .playerInput:focus {
 	outline: none;
-	border-color: rgba(255, 255, 255, 0.35);
-	box-shadow: 0 0 0 3px rgba(131, 112, 255, 0.25);
+	background: rgba(15, 92, 86, 0.65);
+	border-color: #40e0d0;
+	box-shadow: 0 0 0 3px rgba(32, 178, 170, 0.3),
+		inset 0 2px 4px rgba(10, 46, 43, 0.3);
 }
 
 .validation {
@@ -390,8 +478,9 @@
 .tip {
 	margin: 0;
 	font-size: 0.85rem;
-	color: rgba(255, 255, 255, 0.6);
+	color: rgba(224, 247, 245, 0.75);
 	text-align: center;
+	font-style: italic;
 }
 
 .gameShell {
@@ -471,7 +560,7 @@
 	position: absolute;
 	inset: 0;
 	border-radius: inherit;
-	background: linear-gradient(100deg, #7366ff, #ff8ec2, #6ee0c7);
+	background: linear-gradient(100deg, #20b2aa, #40e0d0, #48d1cc);
 	transition: width 0.4s ease;
 }
 
@@ -522,7 +611,7 @@
 .overlay {
 	position: fixed;
 	inset: 0;
-	background: rgba(8, 5, 36, 0.82);
+	background: rgba(10, 46, 43, 0.85);
 	backdrop-filter: blur(10px);
 	display: grid;
 	place-items: center;
@@ -531,16 +620,16 @@
 }
 
 .overlayCard {
-	background: rgba(255, 255, 255, 0.12);
-	border: 1px solid rgba(255, 255, 255, 0.24);
+	background: rgba(10, 46, 43, 0.9);
+	border: 1px solid rgba(32, 178, 170, 0.3);
 	border-radius: 24px;
 	padding: 2rem;
 	text-align: center;
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
-	color: #ffffff;
-	box-shadow: 0 18px 42px rgba(8, 3, 33, 0.5);
+	color: #e0f7f5;
+	box-shadow: 0 18px 42px rgba(10, 46, 43, 0.6);
 }
 
 .overlayCard h3 {
@@ -672,7 +761,7 @@
 	gap: clamp(1.8rem, 4vw, 2.6rem);
 	--arena-bg-desktop: url('/resimler/arkaplan/siyer-eslestirme.png');
 	--arena-bg-current: var(--arena-bg-mobile, var(--arena-bg-desktop));
-	background-color: #0d0826;
+	background-color: #0a2e2b;
 	background-image: var(--arena-bg-current);
 	background-position: center top;
 	background-repeat: no-repeat;
@@ -687,9 +776,9 @@
 	inset: 0;
 	background: linear-gradient(
 		180deg,
-		rgba(13, 8, 38, 0.75) 0%,
-		rgba(13, 8, 38, 0.85) 50%,
-		rgba(13, 8, 38, 0.9) 100%
+		rgba(10, 46, 43, 0.75) 0%,
+		rgba(13, 74, 69, 0.85) 50%,
+		rgba(15, 92, 86, 0.9) 100%
 	);
 	z-index: 0;
 	pointer-events: none;
@@ -728,7 +817,7 @@
 	font-size: clamp(2.2rem, 6vw, 3.2rem);
 	line-height: 1.05;
 	color: #ffffff;
-	text-shadow: 0 0 24px rgba(145, 108, 255, 0.35);
+	text-shadow: 0 0 24px rgba(32, 178, 170, 0.45);
 }
 
 .gameHeaderSubtitle {
@@ -833,15 +922,15 @@
 	margin: 0;
 	justify-self: end;
 	align-self: flex-start;
-	background: rgba(20, 15, 50, 0.75);
+	background: rgba(10, 46, 43, 0.75);
 	backdrop-filter: blur(12px);
-	border: 1px solid rgba(255, 255, 255, 0.2);
+	border: 1px solid rgba(32, 178, 170, 0.25);
 	border-radius: 18px;
 	padding: 0.75rem 0.9rem 0.95rem;
 	display: flex;
 	flex-direction: column;
 	gap: 0.7rem;
-	box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+	box-shadow: 0 12px 35px rgba(10, 46, 43, 0.4);
 	position: relative;
 	z-index: 2;
 }
@@ -868,11 +957,11 @@
 	display: flex;
 	align-items: center;
 	gap: 0.85rem;
-	background: rgba(8, 5, 36, 0.45);
-	border: 1px solid rgba(255, 255, 255, 0.12);
+	background: rgba(10, 46, 43, 0.5);
+	border: 1px solid rgba(32, 178, 170, 0.2);
 	border-radius: 16px;
 	padding: 0.75rem 0.9rem;
-	box-shadow: 0 12px 28px rgba(8, 4, 32, 0.35);
+	box-shadow: 0 12px 28px rgba(10, 46, 43, 0.4);
 	transition: transform 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -912,8 +1001,8 @@
 }
 
 .rankSecond .rankIcon {
-	background: rgba(173, 200, 255, 0.22);
-	color: #d0dcff;
+	background: rgba(64, 224, 208, 0.22);
+	color: #7fffd4;
 }
 
 .rankThird .rankIcon {
@@ -931,7 +1020,7 @@
 .rankSecond .playerName {
 	font-size: 1.02rem;
 	font-weight: 700;
-	color: #dae2ff;
+	color: #48d1cc;
 }
 
 .rankThird .playerName {
@@ -952,8 +1041,8 @@
 }
 
 .scoreItem.scoreIncoming {
-	border-color: rgba(126, 108, 255, 0.65);
-	box-shadow: 0 0 22px rgba(126, 108, 255, 0.35);
+	border-color: rgba(64, 224, 208, 0.65);
+	box-shadow: 0 0 22px rgba(32, 178, 170, 0.35);
 }
 
 
@@ -980,12 +1069,12 @@
 	width: clamp(220px, 40vw, 340px);
 	padding: 2rem 2.5rem;
 	border-radius: 28px;
-	background: rgba(15, 10, 50, 0.95);
+	background: rgba(10, 46, 43, 0.95);
 	backdrop-filter: blur(12px);
-	border: 2px solid rgba(255, 255, 255, 0.3);
+	border: 2px solid rgba(32, 178, 170, 0.4);
 	text-align: center;
-	color: #ffffff;
-	box-shadow: 0 24px 50px rgba(8, 3, 32, 0.6);
+	color: #e0f7f5;
+	box-shadow: 0 24px 50px rgba(10, 46, 43, 0.6);
 	animation: popIn 0.35s ease;
 	transform: none;
 	max-width: min(520px, 100%);
@@ -1049,7 +1138,7 @@
 .finalRankItem.rankSecond .finalRankName {
 	font-size: 1.7rem;
 	font-weight: 700;
-	color: #d0dcff;
+	color: #48d1cc;
 }
 
 .finalRankItem.rankThird .finalRankName {
@@ -1139,27 +1228,27 @@
 }
 
 .backButton {
-	border: 1px solid rgba(255, 255, 255, 0.3);
-	background: rgba(20, 15, 50, 0.85);
+	border: 1px solid rgba(32, 178, 170, 0.4);
+	background: rgba(10, 46, 43, 0.85);
 	backdrop-filter: blur(8px);
-	color: #fff;
+	color: #e0f7f5;
 	padding: 0.5rem 0.9rem;
 	border-radius: 999px;
 	font-size: 1.2rem;
 	font-weight: 600;
 	cursor: pointer;
 	transition: all 0.3s ease;
-	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+	box-shadow: 0 6px 20px rgba(10, 46, 43, 0.3);
 	position: relative;
 	z-index: 2;
 }
 
 .backButton:hover,
 .backButton:focus-visible {
-	background: rgba(35, 25, 70, 0.9);
-	border-color: rgba(255, 255, 255, 0.45);
+	background: rgba(13, 74, 69, 0.9);
+	border-color: rgba(64, 224, 208, 0.5);
 	transform: translateY(-2px);
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+	box-shadow: 0 8px 24px rgba(10, 46, 43, 0.4);
 }
 
 @media (max-width: 680px) {
@@ -1177,15 +1266,15 @@
 @media (max-width: 680px) {
 	.gamePage {
 		--arena-bg-mobile: url('/resimler/arkaplan/siyer-eslestirme-yazisiz.jpg');
-		background-color: #0f0a2e;
+		background-color: #0a2e2b;
 	}
 
 	.gamePage::before {
 		background: linear-gradient(
 			180deg,
-			rgba(15, 10, 46, 0.82) 0%,
-			rgba(15, 10, 46, 0.88) 50%,
-			rgba(15, 10, 46, 0.92) 100%
+			rgba(10, 46, 43, 0.82) 0%,
+			rgba(13, 74, 69, 0.88) 50%,
+			rgba(15, 92, 86, 0.92) 100%
 		);
 	}
 }

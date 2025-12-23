@@ -81,7 +81,7 @@ export default function CreateGameButton({ onGameCreated, onError }: CreateGameB
         onClick={handleClick}
         disabled={loading}
       >
-        {loading ? 'Oluşturuluyor...' : 'Oyunu Kur'}
+        {loading ? 'Oluşturuluyor...' : 'Lobiyi Kur'}
       </button>
       
       {/* Hata mesajı */}
