@@ -158,57 +158,57 @@ export default function GameReadyDialog({
 					</>
 				) : (
 					<>
-						<h2 className={styles.title}>🎉 Oyun Hazır!</h2>
-						<p className={styles.description}>
-							Oyuncular aşağıdaki kod veya QR ile katılabilir
-						</p>
+				<h2 className={styles.title}>🎉 Oyun Hazır!</h2>
+				<p className={styles.description}>
+					Oyuncular aşağıdaki kod veya QR ile katılabilir
+				</p>
 
-						<div className={styles.content}>
-							<div className={styles.codeSection}>
-								<label className={styles.label}>Oyun Kodu:</label>
-								<div className={styles.copyRow}>
-									<span className={styles.code}>{code}</span>
-									<button
-										className={styles.copyButton}
-										onClick={() => copyToClipboard(code, 'code')}
-										disabled={copiedCode}
-									>
-										{copiedCode ? '✓ Kopyalandı' : 'Kopyala'}
-									</button>
-								</div>
-							</div>
-
-							<div className={styles.urlSection}>
-								<label className={styles.label}>Bağlantı:</label>
-								<div className={styles.copyRow}>
-									<span className={styles.url}>{joinUrl}</span>
-									<button
-										className={styles.copyButton}
-										onClick={() =>
-											copyToClipboard(`${window.location.origin}${joinUrl}`, 'url')
-										}
-										disabled={copiedUrl}
-									>
-										{copiedUrl ? '✓ Kopyalandı' : 'Kopyala'}
-									</button>
-								</div>
-							</div>
-
-							{qrDataUrl && (
-								<div className={styles.qrSection}>
-									<label className={styles.label}>QR Kod:</label>
-									<img src={qrDataUrl} alt="QR Kod" className={styles.qrCode} />
-								</div>
-							)}
+				<div className={styles.content}>
+					<div className={styles.codeSection}>
+						<label className={styles.label}>Oyun Kodu:</label>
+						<div className={styles.copyRow}>
+							<span className={styles.code}>{code}</span>
+							<button
+								className={styles.copyButton}
+								onClick={() => copyToClipboard(code, 'code')}
+								disabled={copiedCode}
+							>
+								{copiedCode ? '✓ Kopyalandı' : 'Kopyala'}
+							</button>
 						</div>
+					</div>
 
-						<div className={styles.actions}>
+					<div className={styles.urlSection}>
+						<label className={styles.label}>Bağlantı:</label>
+						<div className={styles.copyRow}>
+							<span className={styles.url}>{joinUrl}</span>
+							<button
+								className={styles.copyButton}
+								onClick={() =>
+									copyToClipboard(`${window.location.origin}${joinUrl}`, 'url')
+								}
+								disabled={copiedUrl}
+							>
+								{copiedUrl ? '✓ Kopyalandı' : 'Kopyala'}
+							</button>
+						</div>
+					</div>
+
+					{qrDataUrl && (
+						<div className={styles.qrSection}>
+							<label className={styles.label}>QR Kod:</label>
+							<img src={qrDataUrl} alt="QR Kod" className={styles.qrCode} />
+						</div>
+					)}
+				</div>
+
+				<div className={styles.actions}>
 							{onNavigateToLobby ? (
 								<button onClick={onNavigateToLobby} className={styles.primaryButton}>
 									Lobiye Git
-								</button>
+					</button>
 							) : null}
-						</div>
+				</div>
 					</>
 				)}
 			</div>

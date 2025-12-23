@@ -86,6 +86,60 @@
 	margin-bottom: 1.5rem;
 }
 
+.label {
+	display: block;
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 0.9);
+	margin-bottom: 0.75rem;
+}
+
+.playerNameContainer {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.avatarButton {
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	padding: 0;
+	transition: transform 0.2s ease;
+	flex-shrink: 0;
+
+	&:hover {
+		transform: scale(1.1);
+	}
+
+	&:active {
+		transform: scale(0.95);
+	}
+}
+
+.playerNameInput {
+	flex: 1;
+	padding: 0.875rem 1rem;
+	font-size: 1rem;
+	font-weight: 500;
+	background: rgba(255, 255, 255, 0.05);
+	border: 2px solid rgba(255, 255, 255, 0.1);
+	border-radius: 12px;
+	color: #fff;
+	transition: all 0.3s;
+
+	&::placeholder {
+		color: rgba(255, 255, 255, 0.4);
+	}
+
+	&:focus {
+		outline: none;
+		border-color: #40e0d0;
+		background: rgba(64, 224, 208, 0.1);
+		box-shadow: 0 0 0 4px rgba(32, 178, 170, 0.2);
+	}
+}
+
 .input {
 	width: 100%;
 	padding: 1rem 1.25rem;
