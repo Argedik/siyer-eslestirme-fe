@@ -6,6 +6,7 @@ import {
 	useTransition,
 	useRef,
 	useCallback,
+	useEffect,
 	type ChangeEvent,
 	type FormEvent,
 	type DragEvent,
@@ -14,6 +15,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Term } from '@/lib/terms';
 import { removeTermAction, upsertTermAction } from './actions';
+import WeekTable from '@/components/admin/WeekTable';
 import styles from './AdminDashboard.module.scss';
 
 type AdminDashboardProps = {
@@ -54,6 +56,17 @@ export default function AdminDashboard({ terms }: AdminDashboardProps) {
 	const [uploadStatus, setUploadStatus] = useState<UploadStatus>('idle');
 	const [isDragOver, setIsDragOver] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	
+	// Hafta tablosu için (şimdilik mock data, backend'den gelecek)
+	// TODO: Backend'den haftaların en büyük rakamını al
+	const [maxWeekNumber, setMaxWeekNumber] = useState<number | null>(null);
+	
+	// Şimdilik test için bir değer (backend entegrasyonu sonra)
+	useEffect(() => {
+		// Backend'den hafta verisi alınacak
+		// Şimdilik null olarak bırakıyoruz
+		// setMaxWeekNumber(15); // Test için
+	}, []);
 
 	const filtered = useMemo(() => {
 		if (!searchTerm.trim()) {
@@ -88,11 +101,6 @@ export default function AdminDashboard({ terms }: AdminDashboardProps) {
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 	};
 
-	const handleClear = () => {
-		setFormState(EMPTY_FORM);
-		setFeedback(null);
-		setUploadStatus('idle');
-	};
 
 	const generateFileName = (originalName: string): string => {
 		const timestamp = Date.now();
@@ -249,142 +257,144 @@ export default function AdminDashboard({ terms }: AdminDashboardProps) {
 				</Link>
 			</header>
 
-			<section className={styles.formCard}>
-				<div className={styles.formHeader}>
-					<h2>{isEditing ? 'Kartı güncelle' : 'Yeni kart ekle'}</h2>
-					<span className={styles.badge}>{items.length} kart</span>
-				</div>
-				{feedback && (
-					<p
-						className={classNames(
-							styles.feedback,
-							feedback.type === 'success'
-								? styles.feedbackSuccess
-								: styles.feedbackError
-						)}
-					>
-						{feedback.message}
-					</p>
-				)}
-				<form className={styles.form} onSubmit={handleSubmit}>
-					<input type="hidden" name="id" value={formState.id} />
-					<div className={styles.formGrid}>
-						<div className={styles.field}>
-							<label htmlFor="title">Başlık</label>
-							<input
-								id="title"
-								name="title"
-								value={formState.title}
-								onChange={handleFieldChange('title')}
-								placeholder="Örneğin: Bedir Zaferi"
-								required
-							/>
-						</div>
-						<div className={styles.field}>
-							<label htmlFor="image">Görsel yolu</label>
-							<input
-								id="image"
-								name="image"
-								value={formState.image}
-								onChange={handleFieldChange('image')}
-								placeholder="Örn: /resimler/kartlar/siyer001.png"
-								required
-							/>
-						</div>
+			<div className={styles.mainContent}>
+				<section className={styles.formCard}>
+					<div className={styles.formHeader}>
+						<h2>{isEditing ? 'Kartı güncelle' : 'Yeni kart ekle'}</h2>
+						<span className={styles.badge}>{items.length} kart</span>
 					</div>
-					<div className={classNames(styles.field, styles.fullWidth)}>
-						<label>Resim Yükle</label>
-						<div
+					{feedback && (
+						<p
 							className={classNames(
-								styles.uploadArea,
-								isDragOver && styles.uploadAreaDragOver,
-								uploadStatus === 'uploading' && styles.uploadAreaUploading
+								styles.feedback,
+								feedback.type === 'success'
+									? styles.feedbackSuccess
+									: styles.feedbackError
 							)}
-							onDragOver={handleDragOver}
-							onDragLeave={handleDragLeave}
-							onDrop={handleDrop}
-							onClick={handleUploadClick}
 						>
-							<input
-								ref={fileInputRef}
-								type="file"
-								accept="image/*"
-								onChange={handleFileInputChange}
-								className={styles.hiddenFileInput}
-							/>
-							{uploadStatus === 'uploading' ? (
-								<div className={styles.uploadContent}>
-									<div className={styles.uploadSpinner}></div>
-									<p>Resim yükleniyor...</p>
-								</div>
-							) : (
-								<div className={styles.uploadContent}>
-									<div className={styles.uploadIcon}>📁</div>
-									<p>
-										{isDragOver
-											? 'Resmi buraya bırak'
-											: 'Resmi sürükleyip bırak veya tıklayarak seç'}
-									</p>
-									<small>PNG, JPG, GIF (Max 5MB)</small>
-								</div>
-							)}
-						</div>
-					</div>
-					<div className={classNames(styles.field, styles.fullWidth)}>
-						<label htmlFor="description">Açıklama</label>
-						<textarea
-							id="description"
-							name="description"
-							value={formState.description}
-							onChange={handleFieldChange('description')}
-							rows={3}
-							placeholder="Kart açıldığında bilgi olarak gösterilecek kısa açıklama"
-							required
-						/>
-					</div>
-					<div className={styles.previewRow}>
-						<div className={styles.previewCard}>
-							{formState.image ? (
-								<Image
-									className={styles.previewImage}
-									src={formState.image}
-									alt="Önizleme"
-									width={120}
-									height={120}
+							{feedback.message}
+						</p>
+					)}
+					<form className={styles.form} onSubmit={handleSubmit}>
+						<input type="hidden" name="id" value={formState.id} />
+						<div className={styles.formGrid}>
+							<div className={styles.field}>
+								<label htmlFor="title">Başlık</label>
+								<input
+									id="title"
+									name="title"
+									value={formState.title}
+									onChange={handleFieldChange('title')}
+									placeholder="Örneğin: Bedir Zaferi"
+									required
 								/>
-							) : (
-								<span className={styles.previewPlaceholder}>
-									Kart görseli burada görünecek
-								</span>
-							)}
-							<strong>{formState.title || 'Kart başlığı'}</strong>
-							<p>
-								{formState.description ||
-									'Açıklama eklediğinde burada önizlenir.'}
-							</p>
+							</div>
+							<div className={styles.field}>
+								<label htmlFor="image">Görsel yolu</label>
+								<input
+									id="image"
+									name="image"
+									value={formState.image}
+									onChange={handleFieldChange('image')}
+									placeholder="Örn: /resimler/kartlar/siyer001.png"
+									required
+								/>
+							</div>
 						</div>
-						<div className={styles.formButtons}>
-							<button
-								type="button"
-								className={styles.ghostButton}
-								onClick={handleClear}
-								disabled={isPending}
+						<div className={classNames(styles.field, styles.fullWidth)}>
+							<label>Resim Yükle</label>
+							<div
+								className={classNames(
+									styles.uploadArea,
+									isDragOver && styles.uploadAreaDragOver,
+									uploadStatus === 'uploading' && styles.uploadAreaUploading
+								)}
+								onDragOver={handleDragOver}
+								onDragLeave={handleDragLeave}
+								onDrop={handleDrop}
+								onClick={handleUploadClick}
 							>
-								Formu temizle
-							</button>
-							<button
-								type="submit"
-								className={styles.primaryButton}
-								disabled={isPending}
-							>
-								{isEditing ? 'Kartı güncelle' : 'Kartı kaydet'}
-							</button>
+								<input
+									ref={fileInputRef}
+									type="file"
+									accept="image/*"
+									onChange={handleFileInputChange}
+									className={styles.hiddenFileInput}
+								/>
+								{uploadStatus === 'uploading' ? (
+									<div className={styles.uploadContent}>
+										<div className={styles.uploadSpinner}></div>
+										<p>Resim yükleniyor...</p>
+									</div>
+								) : (
+									<div className={styles.uploadContent}>
+										<div className={styles.uploadIcon}>📁</div>
+										<p>
+											{isDragOver
+												? 'Resmi buraya bırak'
+												: 'Resmi sürükleyip bırak veya tıklayarak seç'}
+										</p>
+										<small>PNG, JPG, GIF (Max 5MB)</small>
+									</div>
+								)}
+							</div>
 						</div>
-					</div>
-				</form>
-			</section>
+						<div className={classNames(styles.field, styles.fullWidth)}>
+							<label htmlFor="description">Açıklama</label>
+							<textarea
+								id="description"
+								name="description"
+								value={formState.description}
+								onChange={handleFieldChange('description')}
+								rows={3}
+								placeholder="Kart açıldığında bilgi olarak gösterilecek kısa açıklama"
+								required
+							/>
+						</div>
+						<div className={styles.previewRow}>
+							<div className={styles.previewCard}>
+								{formState.image ? (
+									<Image
+										className={styles.previewImage}
+										src={formState.image}
+										alt="Önizleme"
+										width={120}
+										height={120}
+									/>
+								) : (
+									<span className={styles.previewPlaceholder}>
+										Kart görseli burada görünecek
+									</span>
+								)}
+								<strong>{formState.title || 'Kart başlığı'}</strong>
+								<p>
+									{formState.description ||
+										'Açıklama eklediğinde burada önizlenir.'}
+								</p>
+							</div>
+							<div className={styles.formButtons}>
+								<button
+									type="submit"
+									className={styles.primaryButton}
+									disabled={isPending}
+								>
+									{isEditing ? 'Kartı güncelle' : 'Kartı kaydet'}
+								</button>
+							</div>
+						</div>
+						
+						{/* Hafta Tablosu (6x6) - Form'un en altında */}
+						<WeekTable
+							maxWeekNumber={maxWeekNumber}
+							onWeekSelect={(weekNumber) => {
+								// Şimdilik sadece log, backend entegrasyonu sonra
+								console.log('Hafta seçildi:', weekNumber);
+							}}
+						/>
+					</form>
+				</section>
 
-			<section className={styles.listSection}>
+				<section className={styles.listSection}>
 				<div className={styles.listHeader}>
 					<h3>Mevcut kartlar</h3>
 					<input
@@ -439,6 +449,7 @@ export default function AdminDashboard({ terms }: AdminDashboardProps) {
 					</div>
 				)}
 			</section>
+			</div>
 		</div>
 	);
 }

@@ -1,0 +1,364 @@
+.gamePage {
+	position: relative;
+	height: 100vh;
+	padding: clamp(1.6rem, 4vw, 3.6rem);
+	display: flex;
+	flex-direction: column;
+	gap: clamp(1.8rem, 4vw, 2.6rem);
+	--arena-bg-desktop: url('/resimler/arkaplan/siyer-eslestirme.png');
+	--arena-bg-current: var(--arena-bg-mobile, var(--arena-bg-desktop));
+	background-color: #0a2e2b;
+	background-image: var(--arena-bg-current);
+	background-position: center top;
+	background-repeat: no-repeat;
+	background-size: cover;
+	overflow: hidden;
+	isolation: isolate;
+}
+
+.gamePage::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		180deg,
+		rgba(10, 46, 43, 0.75) 0%,
+		rgba(13, 74, 69, 0.85) 50%,
+		rgba(15, 92, 86, 0.9) 100%
+	);
+	z-index: 0;
+	pointer-events: none;
+}
+
+.gameWrapper {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	gap: clamp(2rem, 4vw, 3rem);
+	height: calc(100vh - clamp(3.2rem, 8vw, 7.2rem));
+	flex: 1;
+	overflow: visible;
+}
+
+.gameShell {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 1.2rem;
+	background: transparent;
+	border: none;
+	border-radius: var(--radius-xl);
+	padding: clamp(1.4rem, 4vw, 2.6rem);
+	height: 100%;
+	flex: 1;
+	box-sizing: border-box;
+	overflow: visible;
+}
+
+// Web için özel layout: Solda kartlar, sağda oyuncular
+.gameLayoutWeb {
+	display: grid;
+	grid-template-columns: 1fr minmax(280px, 320px);
+	gap: 2rem;
+	height: 100%;
+	align-items: stretch;
+	overflow: visible;
+	position: relative;
+}
+
+.gameBoardColumn {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow: visible;
+	gap: 1rem;
+	position: relative;
+}
+
+.turnStripFixed {
+	width: 100%;
+	min-height: 140px;
+	height: 140px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	position: relative;
+	overflow: visible;
+	z-index: 10;
+	background: transparent;
+}
+
+.gameBoardWeb {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	min-height: 0;
+}
+
+.chessBoard {
+	width: 100%;
+	height: 100%;
+	background: 
+		repeating-linear-gradient(
+			0deg,
+			rgba(10, 46, 43, 0.25) 0px,
+			rgba(10, 46, 43, 0.25) 108px,
+			rgba(8, 38, 36, 0.25) 108px,
+			rgba(8, 38, 36, 0.25) 216px
+		),
+		repeating-linear-gradient(
+			90deg,
+			rgba(10, 46, 43, 0.25) 0px,
+			rgba(10, 46, 43, 0.25) 108px,
+			rgba(8, 38, 36, 0.25) 108px,
+			rgba(8, 38, 36, 0.25) 216px
+		);
+	border: 2px solid rgba(32, 178, 170, 0.2);
+	border-radius: 16px;
+	padding: 1rem;
+	box-shadow: 
+		inset 0 0 60px rgba(32, 178, 170, 0.08),
+		0 8px 32px rgba(10, 46, 43, 0.3);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: auto;
+}
+
+.boardGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, 100px);
+	grid-auto-rows: 150px;
+	gap: 8px;
+	justify-content: center;
+	align-content: center;
+	padding: 0.5rem;
+	width: fit-content;
+	max-width: 100%;
+}
+
+.boardCell {
+	width: 100px;
+	height: 150px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
+
+// Tablet: 80px genişlik, 120px yükseklik
+@media (max-width: 1024px) and (min-width: 769px) {
+	.boardGrid {
+		grid-template-columns: repeat(auto-fit, 80px);
+		grid-auto-rows: 120px;
+		gap: 6px;
+	}
+
+	.boardCell {
+		width: 80px;
+		height: 120px;
+	}
+
+	.chessBoard {
+		background: 
+			repeating-linear-gradient(
+				0deg,
+				rgba(10, 46, 43, 0.25) 0px,
+				rgba(10, 46, 43, 0.25) 88px,
+				rgba(8, 38, 36, 0.25) 88px,
+				rgba(8, 38, 36, 0.25) 176px
+			),
+			repeating-linear-gradient(
+				90deg,
+				rgba(10, 46, 43, 0.25) 0px,
+				rgba(10, 46, 43, 0.25) 88px,
+				rgba(8, 38, 36, 0.25) 88px,
+				rgba(8, 38, 36, 0.25) 176px
+			);
+	}
+}
+
+// Mobil: 50px genişlik, 75px yükseklik
+@media (max-width: 768px) {
+	.boardGrid {
+		grid-template-columns: repeat(auto-fit, 50px);
+		grid-auto-rows: 75px;
+		gap: 4px;
+	}
+
+	.boardCell {
+		width: 50px;
+		height: 75px;
+	}
+
+	.chessBoard {
+		background: 
+			repeating-linear-gradient(
+				0deg,
+				rgba(10, 46, 43, 0.25) 0px,
+				rgba(10, 46, 43, 0.25) 55px,
+				rgba(8, 38, 36, 0.25) 55px,
+				rgba(8, 38, 36, 0.25) 110px
+			),
+			repeating-linear-gradient(
+				90deg,
+				rgba(10, 46, 43, 0.25) 0px,
+				rgba(10, 46, 43, 0.25) 55px,
+				rgba(8, 38, 36, 0.25) 55px,
+				rgba(8, 38, 36, 0.25) 110px
+			);
+		padding: 0.5rem;
+	}
+}
+
+.playerListSidebarWeb {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	background: rgba(10, 46, 43, 0.75);
+	backdrop-filter: blur(12px);
+	border: 1px solid rgba(32, 178, 170, 0.25);
+	border-radius: 18px;
+	padding: 1rem;
+	box-shadow: 0 12px 35px rgba(10, 46, 43, 0.4);
+	overflow-y: auto;
+}
+
+.turnPopup {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+	z-index: 15;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	overflow: visible;
+}
+
+.turnPopupCard {
+	width: clamp(280px, 45vw, 380px);
+	padding: 2rem 2.5rem;
+	border-radius: 28px;
+	background: rgba(10, 46, 43, 0.98);
+	backdrop-filter: blur(16px);
+	border: 3px solid rgba(32, 178, 170, 0.5);
+	text-align: center;
+	color: #e0f7f5;
+	box-shadow: 0 24px 50px rgba(10, 46, 43, 0.8),
+		0 0 40px rgba(32, 178, 170, 0.3);
+	animation: popIn 0.35s ease;
+	transform: none;
+	position: relative;
+	z-index: 20;
+	overflow: visible;
+}
+
+.turnLabel {
+	display: block;
+	text-transform: uppercase;
+	letter-spacing: 0.16em;
+	font-size: 0.72rem;
+	color: rgba(255, 255, 255, 0.6);
+	margin-bottom: 0.65rem;
+}
+
+.turnPopupCard strong {
+	font-family: var(--font-display, inherit);
+	font-size: clamp(1.9rem, 5vw, 2.5rem);
+	letter-spacing: 0.02em;
+}
+
+@keyframes popIn {
+	0% {
+		opacity: 0;
+		transform: translateY(-20px) scale(0.85);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(-20px) scale(1);
+	}
+}
+
+@media (max-width: 1024px) {
+	.gameLayoutWeb {
+		grid-template-columns: 1fr minmax(200px, 250px);
+		gap: 1.5rem;
+	}
+
+	.playerListSidebarWeb {
+		padding: 0.8rem;
+	}
+
+	.turnStripFixed {
+		min-height: 120px;
+		height: 120px;
+	}
+
+	.gameBoardWeb {
+		min-height: 300px;
+	}
+}
+
+@media (max-width: 768px) {
+	.gameLayoutWeb {
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+
+	.playerListSidebarWeb {
+		max-height: 200px;
+	}
+
+	.turnStripFixed {
+		min-height: 100px;
+		height: 100px;
+	}
+
+	.gameBoardWeb {
+		min-height: 250px;
+	}
+}
+
+@media (max-width: 680px) {
+	.gamePage {
+		--arena-bg-mobile: url('/resimler/arkaplan/siyer-eslestirme-yazisiz.jpg');
+		background-color: #0a2e2b;
+	}
+
+	.gamePage::before {
+		background: linear-gradient(
+			180deg,
+			rgba(10, 46, 43, 0.82) 0%,
+			rgba(13, 74, 69, 0.88) 50%,
+			rgba(15, 92, 86, 0.92) 100%
+		);
+	}
+
+	.turnPopupCard {
+		min-width: clamp(200px, 80vw, 300px);
+		padding: 1.5rem 2rem;
+		transform: none;
+	}
+
+	@keyframes popIn {
+		0% {
+			opacity: 0;
+			transform: scale(0.85);
+		}
+		100% {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+}
+

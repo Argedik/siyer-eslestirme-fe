@@ -24,11 +24,22 @@
  * - CreateLobbyRequest.cs
  * 
  * KULLANIM:
- * const request: CreateLobbyRequest = { adminUsername: "Admin" };
+ * const request: CreateLobbyRequest = { 
+ *   adminUsername: "Admin",
+ *   pairCount: 6,
+ *   duplicateLevel: 2,
+ *   colorTheme: "su-yesili"
+ * };
  */
 export interface CreateLobbyRequest {
   /** Lobi oluşturan kullanıcının adı */
   adminUsername: string;
+  /** Kart çifti sayısı (4-18 arası, opsiyonel, varsayılan: 6) */
+  pairCount?: number;
+  /** Mükerrer kart seviyesi (2: kolay, 3: orta, 4: zor, opsiyonel, varsayılan: 2) */
+  duplicateLevel?: 2 | 3 | 4;
+  /** Renk teması (opsiyonel, varsayılan: "su-yesili") */
+  colorTheme?: "su-yesili" | "mavi" | "kirmizi" | "pembe" | "turuncu" | "mor";
 }
 
 /**
@@ -116,5 +127,11 @@ export interface LobbyResponse {
   createdAt: string;
   /** Lobideki oyuncular */
   players: PlayerResponse[];
+  /** Kart çifti sayısı (4-18 arası) */
+  pairCount?: number;
+  /** Mükerrer kart seviyesi (2: kolay, 3: orta, 4: zor) */
+  duplicateLevel?: 2 | 3 | 4;
+  /** Renk teması */
+  colorTheme?: "su-yesili" | "mavi" | "kirmizi" | "pembe" | "turuncu" | "mor";
 }
 

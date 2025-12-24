@@ -1,0 +1,117 @@
+// Hafta Tablosu Component
+.weekTableContainer {
+	display: flex;
+	justify-content: center;
+	padding: 1.2rem 0 0 0;
+	margin-top: auto;
+}
+
+.weekTable {
+	display: grid;
+	grid-template-columns: repeat(6, 1fr);
+	gap: 0.2rem;
+	width: fit-content;
+}
+
+.weekCell {
+	width: 30px;
+	height: 30px;
+	background: rgba(13, 74, 69, 0.6);
+	border: 1px solid rgba(32, 178, 170, 0.3);
+	border-radius: 6px;
+	color: rgba(224, 247, 245, 0.8);
+	font-size: 0.75rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
+
+.weekCell:hover {
+	background: rgba(15, 92, 86, 0.8);
+	border-color: rgba(64, 224, 208, 0.5);
+	transform: scale(1.1);
+	z-index: 1;
+}
+
+.weekCellHighlighted {
+	background: linear-gradient(135deg, rgba(32, 178, 170, 0.4) 0%, rgba(64, 224, 208, 0.3) 100%);
+	border-color: rgba(64, 224, 208, 0.6);
+	color: #e0f7f5;
+	box-shadow: 
+		0 0 0 1px rgba(64, 224, 208, 0.3),
+		0 0 12px rgba(32, 178, 170, 0.4),
+		inset 0 0 20px rgba(64, 224, 208, 0.2);
+	position: relative;
+}
+
+.weekCellHighlighted::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		90deg,
+		transparent 0%,
+		rgba(64, 224, 208, 0.3) 20%,
+		rgba(64, 224, 208, 0.5) 50%,
+		rgba(64, 224, 208, 0.3) 80%,
+		transparent 100%
+	);
+	border-radius: 6px;
+	animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+	0%, 100% {
+		opacity: 0.5;
+	}
+	50% {
+		opacity: 1;
+	}
+}
+
+.weekCellHighlighted::after {
+	content: '';
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 60%;
+	height: 60%;
+	background: radial-gradient(
+		circle,
+		rgba(64, 224, 208, 0.6) 0%,
+		rgba(32, 178, 170, 0.3) 50%,
+		transparent 100%
+	);
+	border-radius: 50%;
+	animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+	0%, 100% {
+		opacity: 0.6;
+		transform: translate(-50%, -50%) scale(1);
+	}
+	50% {
+		opacity: 1;
+		transform: translate(-50%, -50%) scale(1.2);
+	}
+}
+
+// Responsive
+@media (max-width: 640px) {
+	.weekTable {
+		gap: 0.2rem;
+	}
+
+	.weekCell {
+		width: 28px;
+		height: 28px;
+		font-size: 0.7rem;
+	}
+}
+

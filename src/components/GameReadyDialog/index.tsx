@@ -113,16 +113,41 @@ export default function GameReadyDialog({
 
 	const copyToClipboard = async (text: string, type: 'code' | 'url') => {
 		try {
-			await navigator.clipboard.writeText(text);
+			// Clipboard API kontrolü
+			if (typeof window !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+				await navigator.clipboard.writeText(text);
+			} else {
+				// Fallback: Eski yöntem (document.execCommand)
+				const textArea = document.createElement('textarea');
+				textArea.value = text;
+				textArea.style.position = 'fixed';
+				textArea.style.left = '-999999px';
+				textArea.style.top = '-999999px';
+				document.body.appendChild(textArea);
+				textArea.focus();
+				textArea.select();
+				
+				try {
+					const successful = document.execCommand('copy');
+					if (!successful) {
+						throw new Error('Copy command failed');
+					}
+				} finally {
+					document.body.removeChild(textArea);
+				}
+			}
+			
 			if (type === 'code') {
 				setCopiedCode(true);
-				setTimeout(() => setCopiedCode(false), 2000);
+				setTimeout(() => setCopiedCode(false), 200);
 			} else {
 				setCopiedUrl(true);
-				setTimeout(() => setCopiedUrl(false), 2000);
+				setTimeout(() => setCopiedUrl(false), 200);
 			}
 		} catch (err) {
 			console.error('Kopyalama başarısız:', err);
+			// Kullanıcıya hata mesajı göster (opsiyonel)
+			alert('Kopyalama başarısız. Lütfen manuel olarak kopyalayın: ' + text);
 		}
 	};
 

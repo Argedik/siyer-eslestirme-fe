@@ -54,7 +54,7 @@ export default function LandingPage() {
 
 	const handleNavigateToGame = () => {
 		setGameReadyDialogOpen(false);
-		router.push('/game');
+		router.push('/game-setup');
 	};
 
 	return (
