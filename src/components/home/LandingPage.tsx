@@ -69,7 +69,7 @@ export default function LandingPage() {
 				<header className={styles.hero}>
 					<h1 className={styles.heroTitle}>
 						3D <span className={styles.heroHighlight}>Siyer Eşleştirme</span>{' '}
-						arenasına hoş geldin!
+						oyununa hoş geldiniz!
 					</h1>
 
 					<img 

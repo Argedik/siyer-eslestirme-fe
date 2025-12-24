@@ -266,15 +266,38 @@ export default function GamePlay({ terms }: GamePlayProps) {
   };
 
 
+  // Kart sayısına göre grid sütun sayısını hesapla (kare grid için)
+  const gridColumns = useMemo(() => {
+    if (cards.length === 0) return 4;
+    // Kare grid için en yakın kare kökü bul
+    const sqrt = Math.sqrt(cards.length);
+    const columns = Math.ceil(sqrt);
+    return Math.max(columns, 3); // Minimum 3 sütun
+  }, [cards.length]);
+
   const colorThemeStyle = useMemo(() => ({
     "--color-primary": currentPalette.primary,
     "--color-secondary": currentPalette.secondary,
     "--color-tertiary": currentPalette.tertiary,
     "--color-quaternary": currentPalette.quaternary,
-  } as CSSProperties), [currentPalette]);
+    "--grid-columns": gridColumns,
+  } as CSSProperties), [currentPalette, gridColumns]);
 
   return (
     <div className={styles.gamePage} style={colorThemeStyle}>
+      {/* Popup - gamePage seviyesinde (mobil yatay modda sağ alt için) */}
+      {turnPopup && status === "playing" && (
+        <div className={styles.turnPopupGlobal}>
+          <div
+            className={styles.turnPopupCard}
+            style={{ borderColor: turnPopup.color, boxShadow: `0 18px 48px ${turnPopup.color}44` }}
+          >
+            <span className={styles.turnLabel}>Sıradaki oyuncu</span>
+            <strong>{turnPopup.name}</strong>
+          </div>
+        </div>
+      )}
+
       <div className={styles.gameWrapper}>
         <section className={styles.gameShell}>
           <div className={styles.gameLayoutWeb}>
@@ -315,7 +338,7 @@ export default function GamePlay({ terms }: GamePlayProps) {
 
             {/* Sağ: Oyuncular listesi */}
             <aside className={styles.playerListSidebarWeb}>
-              <PlayerList />
+              <PlayerList activePlayerName={players[activeIndex]?.name} />
             </aside>
           </div>
 

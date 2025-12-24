@@ -97,6 +97,8 @@
 	justify-content: center;
 	overflow: hidden;
 	min-height: 0;
+	width: 100%;
+	height: 100%;
 }
 
 .chessBoard {
@@ -127,17 +129,20 @@
 	align-items: center;
 	justify-content: center;
 	overflow: auto;
+	box-sizing: border-box;
 }
 
 .boardGrid {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, 100px);
+	grid-template-columns: repeat(var(--grid-columns, 4), 100px);
 	grid-auto-rows: 150px;
 	gap: 8px;
 	justify-content: center;
 	align-content: center;
+	justify-items: center;
+	align-items: center;
 	padding: 0.5rem;
-	width: fit-content;
+	width: 100%;
 	max-width: 100%;
 }
 
@@ -153,9 +158,14 @@
 // Tablet: 80px genişlik, 120px yükseklik
 @media (max-width: 1024px) and (min-width: 769px) {
 	.boardGrid {
-		grid-template-columns: repeat(auto-fit, 80px);
+		grid-template-columns: repeat(var(--grid-columns, 4), 80px);
 		grid-auto-rows: 120px;
 		gap: 6px;
+		width: 100%;
+		justify-content: center;
+		align-content: center;
+		justify-items: center;
+		align-items: center;
 	}
 
 	.boardCell {
@@ -185,9 +195,14 @@
 // Mobil: 50px genişlik, 75px yükseklik
 @media (max-width: 768px) {
 	.boardGrid {
-		grid-template-columns: repeat(auto-fit, 50px);
+		grid-template-columns: repeat(var(--grid-columns, 4), 50px);
 		grid-auto-rows: 75px;
 		gap: 4px;
+		width: 100%;
+		justify-content: center;
+		align-content: center;
+		justify-items: center;
+		align-items: center;
 	}
 
 	.boardCell {
@@ -220,13 +235,19 @@
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-	background: rgba(10, 46, 43, 0.75);
+	background: linear-gradient(135deg, rgba(10, 46, 43, 0.8) 0%, rgba(13, 74, 69, 0.8) 50%, rgba(15, 92, 86, 0.8) 100%);
 	backdrop-filter: blur(12px);
 	border: 1px solid rgba(32, 178, 170, 0.25);
 	border-radius: 18px;
-	padding: 1rem;
+	padding: 1.5rem;
 	box-shadow: 0 12px 35px rgba(10, 46, 43, 0.4);
-	overflow-y: auto;
+	overflow: hidden;
+	box-sizing: border-box;
+}
+
+// Global popup (gamePage seviyesinde) - varsayılan olarak gizli
+.turnPopupGlobal {
+	display: none;
 }
 
 .turnPopup {
@@ -296,7 +317,7 @@
 	}
 
 	.playerListSidebarWeb {
-		padding: 0.8rem;
+		padding: 1.25rem;
 	}
 
 	.turnStripFixed {
@@ -316,7 +337,7 @@
 	}
 
 	.playerListSidebarWeb {
-		max-height: 200px;
+		padding: 1rem;
 	}
 
 	.turnStripFixed {
@@ -359,6 +380,154 @@
 			opacity: 1;
 			transform: scale(1);
 		}
+	}
+}
+
+// Mobil yatay mod (landscape) - Sadece mobil ve yatay modda
+@media (max-width: 768px) and (orientation: landscape) {
+	.gamePage {
+		padding: 0.5rem;
+	}
+
+	.gameWrapper {
+		gap: 0.5rem;
+		height: calc(100vh - 1rem);
+	}
+
+	.gameShell {
+		padding: 0.5rem;
+		gap: 0.5rem;
+	}
+
+	.gameLayoutWeb {
+		grid-template-columns: 1fr auto;
+		gap: 0.5rem;
+		align-items: stretch;
+		height: 100%;
+	}
+
+	.gameBoardColumn {
+		flex: 1;
+		min-width: 0;
+		height: 100%;
+	}
+
+	.turnStripFixed {
+		display: none !important; // Üst popup alanı gizlendi
+	}
+
+	// turnStripFixed içindeki popup'ı da kesinlikle gizle
+	.turnStripFixed .turnPopup {
+		display: none !important;
+		visibility: hidden !important;
+		opacity: 0 !important;
+		pointer-events: none !important;
+	}
+
+	// Global popup'ı göster ve sağ alt tarafa hizala
+	.turnPopupGlobal {
+		display: flex !important;
+		position: fixed;
+		bottom: 0.75rem !important;
+		right: calc(80px + 1rem) !important;
+		top: auto !important;
+		left: auto !important;
+		width: auto !important;
+		height: auto !important;
+		align-items: flex-end !important;
+		justify-content: flex-end !important;
+		z-index: 100;
+		pointer-events: none;
+	}
+
+	.gameBoardWeb {
+		flex: 1;
+		min-height: 0;
+		height: 100%;
+	}
+
+	.chessBoard {
+		width: 100%;
+		height: 100%;
+		padding: 0.25rem;
+		display: flex;
+		align-items: flex-start;
+		justify-content: flex-start;
+	}
+
+	.boardGrid {
+		grid-template-columns: repeat(var(--grid-columns, 4), 50px);
+		grid-auto-rows: 75px;
+		gap: 4px;
+		width: 100%;
+		justify-content: center;
+		align-content: center;
+		justify-items: center;
+		align-items: center;
+	}
+
+	.boardCell {
+		width: 50px;
+		height: 75px;
+	}
+
+	// Popup sağ alt tarafa hizalanacak
+	.turnPopup {
+		position: fixed !important;
+		bottom: 0.75rem !important;
+		right: calc(80px + 1rem) !important;
+		top: auto !important;
+		left: auto !important;
+		width: auto !important;
+		height: auto !important;
+		align-items: flex-end !important;
+		justify-content: flex-end !important;
+		z-index: 100;
+	}
+
+	.turnPopupCard {
+		width: clamp(160px, 28vw, 220px);
+		padding: 0.75rem 1.25rem;
+		margin: 0;
+		font-size: 0.9rem;
+	}
+
+	.turnLabel {
+		font-size: 0.65rem;
+		margin-bottom: 0.4rem;
+	}
+
+	.turnPopupCard strong {
+		font-size: clamp(1.2rem, 4vw, 1.6rem);
+	}
+
+	// Oyuncu listesi sağ üstte sadece avatarlar
+	.playerListSidebarWeb {
+		width: auto;
+		min-width: 40px;
+		max-width: 50px;
+		height: auto;
+		max-height: calc(100vh - 2rem);
+		padding: 0.5rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
+		position: fixed;
+		top: 0.5rem;
+		right: 0.5rem;
+		z-index: 50;
+		overflow-y: auto;
+		background: transparent;
+		border: none;
+		box-shadow: none;
+		backdrop-filter: none;
+	}
+
+	// Mobil yatay modda avatarları küçült
+	.playerListSidebarWeb :global(.avatarWrapper svg) {
+		width: 20px !important;
+		height: 20px !important;
 	}
 }
 

@@ -1,13 +1,15 @@
 .playerList {
-	background: linear-gradient(135deg, rgba(10, 46, 43, 0.8) 0%, rgba(13, 74, 69, 0.8) 50%, rgba(15, 92, 86, 0.8) 100%);
-	border: 1px solid rgba(32, 178, 170, 0.3);
-	border-radius: 16px;
-	padding: 1.5rem;
-	height: fit-content;
-	max-height: calc(100vh - 200px);
-	overflow-y: auto;
-	box-shadow: 0 8px 24px rgba(10, 46, 43, 0.4);
-	backdrop-filter: blur(8px);
+	background: transparent;
+	border: none;
+	border-radius: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+	overflow: visible;
+	box-shadow: none;
+	backdrop-filter: none;
+	display: flex;
+	flex-direction: column;
 }
 
 .title {
@@ -18,6 +20,7 @@
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
+	flex-shrink: 0;
 }
 
 .count {
@@ -35,6 +38,7 @@
 	text-align: center;
 	padding: 2rem 1rem;
 	color: rgba(255, 255, 255, 0.7);
+	flex-shrink: 0;
 }
 
 .error {
@@ -56,6 +60,8 @@
 	display: flex;
 	flex-direction: column;
 	gap: 0.75rem;
+	flex: 1;
+	overflow-y: auto;
 }
 
 .item {
@@ -73,11 +79,36 @@
 		border-color: rgba(32, 178, 170, 0.3);
 		transform: translateX(4px);
 	}
+
+	&.active {
+		background: rgba(32, 178, 170, 0.25);
+		border: 2px solid rgba(32, 178, 170, 0.6);
+		box-shadow: 
+			0 0 0 2px rgba(32, 178, 170, 0.2),
+			0 4px 12px rgba(32, 178, 170, 0.3);
+		transform: translateX(4px);
+		
+		.username {
+			color: #e0f7f5;
+			font-weight: 700;
+		}
+
+		.avatarWrapper {
+			:global(svg) {
+				filter: brightness(1.2) drop-shadow(0 0 4px rgba(32, 178, 170, 0.6));
+			}
+		}
+	}
 }
 
 .avatarWrapper {
 	position: relative;
 	flex-shrink: 0;
+
+	:global(svg) {
+		width: 20px !important;
+		height: 20px !important;
+	}
 }
 
 .adminBadge {
@@ -120,8 +151,7 @@
 // Responsive Design
 @media (max-width: 1024px) {
 	.playerList {
-		max-height: calc(100vh - 150px);
-		padding: 1.25rem;
+		padding: 0;
 	}
 
 	.title {
@@ -136,8 +166,7 @@
 
 @media (max-width: 768px) {
 	.playerList {
-		padding: 1rem;
-		border-radius: 12px;
+		padding: 0;
 	}
 
 	.title {
@@ -159,31 +188,93 @@
 	}
 }
 
-@media (max-width: 480px) {
+// Mobil: Sadece avatarlar görünsün (yatay ve dikey)
+@media (max-width: 768px) {
 	.playerList {
-		padding: 0.875rem;
-		max-height: 300px;
+		padding: 0.75rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
 	}
 
 	.title {
-		font-size: 0.95rem;
+		display: none; // Başlık gizlendi
+	}
+
+	.count {
+		display: none;
+	}
+
+	.list {
+		flex-direction: column;
+		gap: 0.5rem;
+		width: 100%;
+		align-items: center;
 	}
 
 	.item {
-		padding: 0.5rem;
+		padding: 0;
+		background: transparent;
+		border: none;
+		width: auto;
+		justify-content: center;
+		gap: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		&:hover {
+			background: transparent;
+			border: none;
+			transform: none;
+		}
+
+		&.active {
+			background: transparent;
+			border: none;
+			transform: none;
+			box-shadow: none;
+
+			.avatarWrapper {
+				:global(svg) {
+					filter: brightness(1.3) drop-shadow(0 0 6px rgba(32, 178, 170, 0.8));
+					transform: scale(1.15);
+				}
+			}
+		}
+	}
+
+	.info {
+		display: none; // İsim ve skor gizlendi
 	}
 
 	.avatarWrapper {
-		// Avatar boyutunu küçült
 		:global(svg) {
-			width: 32px !important;
-			height: 32px !important;
+			width: 20px !important;
+			height: 20px !important;
 		}
+	}
+
+	.adminBadge {
+		width: 18px;
+		height: 18px;
+		font-size: 0.7rem;
+		top: -2px;
+		right: -2px;
+	}
+
+	.loading,
+	.error,
+	.empty {
+		padding: 0.5rem;
+		font-size: 0.75rem;
+		text-align: center;
 	}
 }
 
-// Scrollbar styling
-.playerList {
+// Scrollbar styling - list için
+.list {
 	&::-webkit-scrollbar {
 		width: 6px;
 	}
