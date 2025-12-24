@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { Term } from "@/lib/terms";
 import MemoryCard, { type MemoryCardData } from "@/components/game/MemoryCard";
+import PlayerList from "@/components/game/PlayerList";
 import styles from "../home/LandingPage.module.scss";
 
 const pastelPalette = ["#20b2aa", "#40e0d0", "#48d1cc", "#7fffd4"];
@@ -592,95 +593,102 @@ export default function GameArena({ terms, backgroundImage }: GameArenaProps) {
       )}
 
         {step === "setup" ? (
-          <section className={styles.panel}>
-            <h2 className={styles.panelTitle}>Oyun ayarları</h2>
-            <div className={styles.panelGrid}>
-              <div>
-                <span className={styles.label}>Oyuncu sayısı</span>
-                <div className={styles.pillRow}>
-                  {[1, 2, 3, 4].map((value) => (
-                    <button
-                      type="button"
-                      key={value}
-                      className={classNames(styles.pill, value === playerCount && styles.pillActive)}
-                      onClick={() => setPlayerCount(value)}
-                    >
-                      {value}
-                    </button>
-                  ))}
+          <div className={styles.setupLayout}>
+            <section className={styles.panel}>
+              <h2 className={styles.panelTitle}>Oyun ayarları</h2>
+              <div className={styles.panelGrid}>
+                <div>
+                  <span className={styles.label}>Oyuncu sayısı</span>
+                  <div className={styles.pillRow}>
+                    {[1, 2, 3, 4].map((value) => (
+                      <button
+                        type="button"
+                        key={value}
+                        className={classNames(styles.pill, value === playerCount && styles.pillActive)}
+                        onClick={() => setPlayerCount(value)}
+                      >
+                        {value}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div>
-                <span className={styles.label}>
-                  Kart çifti{hasEnoughTerms ? ` (${pairCount})` : ""}
-                </span>
-                {hasEnoughTerms ? (
-                  <div className={styles.sliderRow}>
-                    <input
-                      className={styles.slider}
-                      type="range"
-                      min={2}
-                      max={maxPairs}
-                      value={pairCount}
-                      onChange={(event) => setPairCount(Number(event.target.value))}
-                    />
-                    <div className={styles.sliderInfo}>
-                      <span>{pairCount * 2} kart</span>
-                      <span>Maks. {maxPairs * 2} kart</span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className={styles.sliderInfo}>
-                    <span>Admin panelinden en az iki kart eklemelisin.</span>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className={styles.playerList}>
-              {players.map((player, index) => (
-                <div key={player.id} className={styles.playerRow}>
-                  <span className={styles.playerBadge} style={{ backgroundColor: player.color }}>
-                    {index + 1}
+                <div>
+                  <span className={styles.label}>
+                    Kart çifti{hasEnoughTerms ? ` (${pairCount})` : ""}
                   </span>
-                  <input
-                    className={styles.playerInput}
-                    value={player.name}
-                    placeholder="Takma ad"
-                    onChange={(event) => handleNameChange(index, event.target.value)}
-                  />
-                  <button type="button" className={styles.aliasButton} onClick={() => handleRandomAlias(index)}>
-                    Rastgele
-                  </button>
+                  {hasEnoughTerms ? (
+                    <div className={styles.sliderRow}>
+                      <input
+                        className={styles.slider}
+                        type="range"
+                        min={2}
+                        max={maxPairs}
+                        value={pairCount}
+                        onChange={(event) => setPairCount(Number(event.target.value))}
+                      />
+                      <div className={styles.sliderInfo}>
+                        <span>{pairCount * 2} kart</span>
+                        <span>Maks. {maxPairs * 2} kart</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={styles.sliderInfo}>
+                      <span>Admin panelinden en az iki kart eklemelisin.</span>
+                    </div>
+                  )}
                 </div>
-              ))}
-            </div>
-            {showValidation && (
-              <p className={styles.validation}>Başlamak için tüm oyuncular bir takma ad seçmeli.</p>
-            )}
-            <div className={styles.panelControls}>
-              <button
-                type="button"
-                className={styles.ghostButton}
-                onClick={() => hasEnoughTerms && setPairCount(Math.min(maxPairs, DEFAULT_PAIR_TARGET))}
-                disabled={!hasEnoughTerms}
-              >
-                Kartları sıfırla
-              </button>
-              <button
-                type="button"
-                className={styles.primaryButton}
-                onClick={startGame}
-                disabled={!hasEnoughTerms}
-              >
-                Oyunu Başlat
-              </button>
-            </div>
-            {hasEnoughTerms ? (
-              <p className={styles.tip}>Bağlantıyı paylaş; herkes tarayıcısından bağlanarak takma adını girebilir.</p>
-            ) : (
-              <p className={styles.validation}>En az iki kart ekleyene kadar oyunu başlatamazsın. Admin panelinden kart ekle.</p>
-            )}
-          </section>
+              </div>
+              <div className={styles.playerList}>
+                {players.map((player, index) => (
+                  <div key={player.id} className={styles.playerRow}>
+                    <span className={styles.playerBadge} style={{ backgroundColor: player.color }}>
+                      {index + 1}
+                    </span>
+                    <input
+                      className={styles.playerInput}
+                      value={player.name}
+                      placeholder="Takma ad"
+                      onChange={(event) => handleNameChange(index, event.target.value)}
+                    />
+                    <button type="button" className={styles.aliasButton} onClick={() => handleRandomAlias(index)}>
+                      Rastgele
+                    </button>
+                  </div>
+                ))}
+              </div>
+              {showValidation && (
+                <p className={styles.validation}>Başlamak için tüm oyuncular bir takma ad seçmeli.</p>
+              )}
+              <div className={styles.panelControls}>
+                <button
+                  type="button"
+                  className={styles.ghostButton}
+                  onClick={() => hasEnoughTerms && setPairCount(Math.min(maxPairs, DEFAULT_PAIR_TARGET))}
+                  disabled={!hasEnoughTerms}
+                >
+                  Kartları sıfırla
+                </button>
+                <button
+                  type="button"
+                  className={styles.primaryButton}
+                  onClick={startGame}
+                  disabled={!hasEnoughTerms}
+                >
+                  Oyunu Başlat
+                </button>
+              </div>
+              {hasEnoughTerms ? (
+                <p className={styles.tip}>Bağlantıyı paylaş; herkes tarayıcısından bağlanarak takma adını girebilir.</p>
+              ) : (
+                <p className={styles.validation}>En az iki kart ekleyene kadar oyunu başlatamazsın. Admin panelinden kart ekle.</p>
+              )}
+            </section>
+            
+            {/* Sağ taraf: Backend'den gelen oyuncu listesi */}
+            <aside className={styles.playerListSidebar}>
+              <PlayerList />
+            </aside>
+          </div>
         ) : (
           <section className={styles.gameShell}>
             <div className={styles.playHeader}>

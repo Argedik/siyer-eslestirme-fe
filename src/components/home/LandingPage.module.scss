@@ -263,6 +263,40 @@
 	color: rgba(255, 255, 255, 0.7);
 }
 
+.setupLayout {
+	display: grid;
+	grid-template-columns: 1fr 420px;
+	gap: 2rem;
+	width: 100%;
+	max-width: 1400px;
+	margin: 0 auto;
+
+	@media (max-width: 1024px) {
+		grid-template-columns: 1fr 380px;
+		gap: 1.5rem;
+	}
+
+	@media (max-width: 768px) {
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
+
+		.playerListSidebar {
+			order: -1; // Mobilde üstte göster
+		}
+	}
+
+	@media (max-width: 480px) {
+		gap: 1rem;
+	}
+}
+
+.playerListSidebar {
+	position: sticky;
+	top: 2rem;
+	height: fit-content;
+	align-self: start;
+}
+
 .panel {
 	position: relative;
 	background: rgba(10, 46, 43, 0.92);

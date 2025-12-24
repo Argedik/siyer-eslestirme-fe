@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { isValidCode, toCode, CODE_LEN } from '@/domain/game';
 import { getLobbyByCode, joinLobby } from '@/services/lobbyApi';
 import { getRandomPlayerName, type PlayerName } from '@/domain/playerNames';
-import { generateClientId } from '@/utils/uuid';
+import { getOrCreateClientId } from '@/utils/uuid';
 import Avvvatars from 'avvvatars-react';
 import AvatarSelector from '@/components/AvatarSelector';
 import styles from './index.module.scss';
@@ -29,22 +29,22 @@ export default function JoinGameDialog({ isOpen, onClose }: JoinGameDialogProps)
 
 	useEffect(() => {
 		if (isOpen) {
-			// Popup açıldığında TÜM state'leri ve verileri temizle
+			// Popup açıldığında state'leri temizle
 			setCode('');
 			setError('');
 			setIsValidating(false);
 			setShowAvatarSelector(false);
 			isSubmittingRef.current = false; // Submit flag'ini sıfırla
 			
-			// localStorage'daki TÜM eski kayıtları temizle (hiçbir veri saklanmasın)
+			// localStorage'daki oyun verilerini temizle (deviceId hariç - aynı cihazı tanımak için)
 			if (typeof window !== 'undefined') {
-				// Tüm olası localStorage key'lerini temizle
+				// Oyun verilerini temizle ama deviceId'yi sakla
 				localStorage.removeItem('current_game_code');
 				localStorage.removeItem('current_lobby_id');
-				localStorage.removeItem('siyer_client_id'); // Client ID'yi de temizle
-				// Başka saklanan veri varsa onları da temizle
+				// siyer_client_id'yi SİLME - aynı cihazı tanımak için gerekli
+				// Başka saklanan oyun verilerini temizle
 				Object.keys(localStorage).forEach(key => {
-					if (key.startsWith('siyer_') || key.startsWith('lobby_') || key.startsWith('player_')) {
+					if ((key.startsWith('lobby_') || key.startsWith('player_')) && key !== 'siyer_client_id') {
 						localStorage.removeItem(key);
 					}
 				});
@@ -116,21 +116,28 @@ export default function JoinGameDialog({ isOpen, onClose }: JoinGameDialogProps)
 		try {
 			const validCode = toCode(code);
 			
-			// Unique client ID oluştur (her istek için yeni)
-			const clientId = generateClientId();
+			// Aynı cihaz için aynı deviceId'yi kullan (localStorage'da saklanır)
+			const deviceId = getOrCreateClientId();
 			
-			// Sadece şu anki kullanıcının bilgilerini gönder (başka hiçbir veri yok)
+			// Sadece şu anki kullanıcının bilgilerini gönder
 			const requestPayload = {
 				lobbyCode: validCode,
 				username: playerName.trim(),
 				avatarUrl: avatarUrl || playerName.trim(),
-				clientId: clientId,
+				deviceId: deviceId, // Backend'de deviceId olarak bekleniyor
 			};
 			
 			// Backend'e katılma isteği gönder (sadece 1 kez, sadece şu anki kullanıcı bilgileri)
-			await joinLobby(requestPayload);
+			const lobby = await joinLobby(requestPayload);
 
-			// Response'u saklamıyoruz, sadece başarı kontrolü yapıyoruz
+			// Lobi kodunu localStorage'a kaydet (oyuncu listesi için)
+			if (typeof window !== 'undefined') {
+				localStorage.setItem('current_game_code', validCode);
+				if (lobby.id) {
+					localStorage.setItem('current_lobby_id', lobby.id.toString());
+				}
+			}
+
 			// Başarılı - oyun sayfasına git
 			router.push('/game');
 		} catch (err: any) {
@@ -168,7 +175,7 @@ export default function JoinGameDialog({ isOpen, onClose }: JoinGameDialogProps)
 								aria-label="Avatar seç"
 							>
 								<Avvvatars
-									value={playerName}
+									value={avatarUrl || playerName}
 									style="shape"
 									size={48}
 									shadow={true}
@@ -184,7 +191,7 @@ export default function JoinGameDialog({ isOpen, onClose }: JoinGameDialogProps)
 								onChange={(e) => {
 									const newName = e.target.value as PlayerName;
 									setPlayerName(newName);
-									setAvatarUrl(newName); // Oyuncu adı değiştiğinde avatar URL'ini de güncelle
+									// Avatar URL'ini değiştirme - sadece avatar seçildiğinde güncellenir
 								}}
 								className={styles.playerNameInput}
 								placeholder="Oyuncu adınız"

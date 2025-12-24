@@ -48,8 +48,8 @@ export interface JoinLobbyRequest {
   username: string;
   /** Avatar URL'i (opsiyonel) - Avvvatars için kullanılan value */
   avatarUrl?: string;
-  /** Unique client ID - Her kullanıcı için benzersiz ID */
-  clientId?: string;
+  /** Device ID - Aynı cihaz/browser için benzersiz tanımlayıcı (localStorage'da saklanır) */
+  deviceId?: string;
 }
 
 // ============================================
@@ -71,6 +71,8 @@ export interface PlayerResponse {
   isAdmin: boolean;
   /** Avatar URL'i (opsiyonel) - Avvvatars için kullanılan value */
   avatarUrl?: string;
+  /** Oyuncu skoru (opsiyonel) */
+  score?: number;
   /** Katılma zamanı (opsiyonel) */
   joinedAt?: string;
 }
