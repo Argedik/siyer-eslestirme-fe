@@ -13,8 +13,8 @@ export default function JoinPage() {
 		if (code) {
 			const upperCode = code.toUpperCase();
 			if (isValidCode(upperCode)) {
-				// Geçerli kod - lobby'ye yönlendir
-				router.replace(`/lobby/${upperCode}`);
+				// Geçerli kod - oyun sayfasına yönlendir
+				router.replace('/game');
 			} else {
 				// Geçersiz kod - ana sayfaya yönlendir
 				router.replace('/');
@@ -28,8 +28,8 @@ export default function JoinPage() {
 			display: 'flex',
 			alignItems: 'center',
 			justifyContent: 'center',
-			background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
-			color: '#fff',
+			background: 'linear-gradient(135deg, #0a2e2b 0%, #0d4a45 30%, #0f5c56 60%, #0d4a45 100%)',
+			color: '#e0f7f5',
 			fontSize: '1.5rem'
 		}}>
 			Yönlendiriliyor...

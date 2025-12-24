@@ -10,6 +10,8 @@ interface GameReadyDialogProps {
 	onClose: () => void;
 	code: string;
 	joinUrl: string;
+	onNavigateToLobby?: () => void;
+	error?: string | null;
 }
 
 export default function GameReadyDialog({
@@ -17,6 +19,8 @@ export default function GameReadyDialog({
 	onClose,
 	code,
 	joinUrl,
+	onNavigateToLobby,
+	error,
 }: GameReadyDialogProps) {
 	const [qrDataUrl, setQrDataUrl] = useState('');
 	const [copiedCode, setCopiedCode] = useState(false);
@@ -131,6 +135,29 @@ export default function GameReadyDialog({
 					×
 				</button>
 
+				{error ? (
+					<>
+						<h2 className={styles.title}>⚠️ Sunucu Hatası</h2>
+						<p className={styles.description} style={{ color: '#ff6b6b' }}>
+							Sunucumuzu açmamız gerekiyor
+						</p>
+						<div className={styles.content}>
+							<p style={{ 
+								color: 'rgba(255, 255, 255, 0.8)', 
+								textAlign: 'center',
+								margin: '1rem 0'
+							}}>
+								{error}
+							</p>
+						</div>
+						<div className={styles.actions}>
+							<button onClick={onClose} className={styles.primaryButton}>
+								Tamam
+							</button>
+						</div>
+					</>
+				) : (
+					<>
 				<h2 className={styles.title}>🎉 Oyun Hazır!</h2>
 				<p className={styles.description}>
 					Oyuncular aşağıdaki kod veya QR ile katılabilir
@@ -176,10 +203,14 @@ export default function GameReadyDialog({
 				</div>
 
 				<div className={styles.actions}>
-					<button onClick={onClose} className={styles.primaryButton}>
-						Tamam
+							{onNavigateToLobby ? (
+								<button onClick={onNavigateToLobby} className={styles.primaryButton}>
+									Lobiye Git
 					</button>
+							) : null}
 				</div>
+					</>
+				)}
 			</div>
 		</div>
 	);
