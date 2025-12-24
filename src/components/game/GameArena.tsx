@@ -3,12 +3,61 @@
 import type { CSSProperties } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import confetti from 'canvas-confetti';
 import type { Term } from "@/lib/terms";
 import MemoryCard, { type MemoryCardData } from "@/components/game/MemoryCard";
 import PlayerList from "@/components/game/PlayerList";
+import { getLobbyByCode } from "@/services/lobbyApi";
 import styles from "../home/LandingPage.module.scss";
 
-const pastelPalette = ["#20b2aa", "#40e0d0", "#48d1cc", "#7fffd4"];
+// Renk paletleri
+const colorPalettes = {
+  "su-yesili": {
+    primary: "#20b2aa",
+    secondary: "#40e0d0",
+    tertiary: "#48d1cc",
+    quaternary: "#7fffd4",
+    name: "Su Yeşili"
+  },
+  "mavi": {
+    primary: "#4169e1",
+    secondary: "#6495ed",
+    tertiary: "#87ceeb",
+    quaternary: "#b0e0e6",
+    name: "Mavi"
+  },
+  "kirmizi": {
+    primary: "#dc143c",
+    secondary: "#ff6347",
+    tertiary: "#ff7f50",
+    quaternary: "#ffa07a",
+    name: "Kırmızı"
+  },
+  "pembe": {
+    primary: "#ff1493",
+    secondary: "#ff69b4",
+    tertiary: "#ffb6c1",
+    quaternary: "#ffc0cb",
+    name: "Pembe"
+  },
+  "turuncu": {
+    primary: "#ff8c00",
+    secondary: "#ffa500",
+    tertiary: "#ffb347",
+    quaternary: "#ffd700",
+    name: "Turuncu"
+  },
+  "mor": {
+    primary: "#9370db",
+    secondary: "#ba55d3",
+    tertiary: "#da70d6",
+    quaternary: "#dda0dd",
+    name: "Mor"
+  }
+};
+
+type ColorTheme = keyof typeof colorPalettes;
+
 const aliasAdjectives = [
   "Galaktik",
   "Parildayan",
@@ -35,6 +84,8 @@ const aliasNouns = [
 ];
 
 const DEFAULT_PAIR_TARGET = 6;
+const MIN_PAIR_COUNT = 4;
+const MAX_PAIR_COUNT = 18;
 
 type Step = "setup" | "play";
 type GameStatus = "idle" | "playing" | "complete";
@@ -84,52 +135,43 @@ function shuffle<T>(items: T[]): T[] {
   return array;
 }
 
-function createDeck(pool: Term[], pairCount: number): MemoryCardData[] {
+function createDeck(pool: Term[], pairCount: number, duplicateCount: number = 2): MemoryCardData[] {
   const source = shuffle(pool).slice(0, pairCount);
-  const doubled = source.flatMap((term) => {
+  const multiplied = source.flatMap((term) => {
     const base = {
       matchId: term.id,
       term,
       isFlipped: false,
       isMatched: false,
     } as const;
-    return [
-      {
-        ...base,
-        id: `${term.id}-a-${Math.random().toString(16).slice(2, 8)}`,
-        tilt: (Math.random() - 0.5) * 6,
-      },
-      {
-        ...base,
-        id: `${term.id}-b-${Math.random().toString(16).slice(2, 8)}`,
-        tilt: (Math.random() - 0.5) * 6,
-      },
-    ];
+    // Mükerrer sayısına göre kart oluştur (2, 3 veya 4 adet)
+    return Array.from({ length: duplicateCount }, (_, index) => ({
+      ...base,
+      id: `${term.id}-${String.fromCharCode(97 + index)}-${Math.random().toString(16).slice(2, 8)}`,
+      tilt: (Math.random() - 0.5) * 6,
+    }));
   });
-  return shuffle(doubled);
+  return shuffle(multiplied);
 }
 
 export default function GameArena({ terms, backgroundImage }: GameArenaProps) {
-  const maxPairs = useMemo(() => Math.min(terms.length, 12), [terms.length]);
-  const hasEnoughTerms = maxPairs >= 2;
+  const maxPairs = useMemo(() => Math.min(terms.length, MAX_PAIR_COUNT), [terms.length]);
+  const hasEnoughTerms = maxPairs >= MIN_PAIR_COUNT;
   const [step, setStep] = useState<Step>("setup");
-  const [playerCount, setPlayerCount] = useState(2);
-  const [pairCount, setPairCount] = useState(() => (hasEnoughTerms ? Math.min(maxPairs, DEFAULT_PAIR_TARGET) : 0));
-  const [players, setPlayers] = useState<Player[]>(() =>
-    Array.from({ length: 2 }, (_, index) => ({
-      id: `player-${index}`,
-      name: generateAlias(index * 13 + 5),
-      score: 0,
-      color: pastelPalette[index % pastelPalette.length],
-    }))
-  );
+  const [pairCount, setPairCount] = useState(() => (hasEnoughTerms ? Math.min(maxPairs, DEFAULT_PAIR_TARGET) : MIN_PAIR_COUNT));
+  const [duplicateLevel, setDuplicateLevel] = useState<2 | 3 | 4>(2); // 2: kolay, 3: orta, 4: zor
+  const [colorTheme, setColorTheme] = useState<ColorTheme>("su-yesili");
+  const [showDuplicateDropdown, setShowDuplicateDropdown] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const currentPalette = useMemo(() => colorPalettes[colorTheme], [colorTheme]);
+  
+  const [players, setPlayers] = useState<Player[]>([]);
   const [cards, setCards] = useState<MemoryCardData[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [locked, setLocked] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [matches, setMatches] = useState(0);
   const [status, setStatus] = useState<GameStatus>("idle");
-  const [showValidation, setShowValidation] = useState(false);
   const [turnPopup, setTurnPopup] = useState<TurnPopup | null>(null);
   const [viewportWidth, setViewportWidth] = useState<number>(
     typeof window === "undefined" ? 0 : window.innerWidth
@@ -168,7 +210,7 @@ export default function GameArena({ terms, backgroundImage }: GameArenaProps) {
       });
   }, [players]);
 
-  const totalCards = cards.length > 0 ? cards.length : pairCount * 2;
+  const totalCards = cards.length > 0 ? cards.length : pairCount * duplicateLevel;
   const desiredColumns = useMemo(() => {
     if (totalCards <= 4) return 2;
     if (totalCards <= 6) return 3;
@@ -336,43 +378,40 @@ export default function GameArena({ terms, backgroundImage }: GameArenaProps) {
     };
   }, [clearTurnPopup]);
 
+  // Dropdown menüleri dışarı tıklandığında kapat
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(`.${styles.settingSelect}`)) {
+        setShowDuplicateDropdown(false);
+      }
+      if (!target.closest(`.${styles.colorPickerWrapper}`)) {
+        setShowColorPicker(false);
+      }
+    };
+
+    if (showDuplicateDropdown || showColorPicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showDuplicateDropdown, showColorPicker]);
+
   useEffect(() => {
     playersRef.current = players;
   }, [players]);
 
-  useEffect(() => {
-    setPlayers((prev) => {
-      const next = prev.slice(0, playerCount).map((player, index) => ({
-        ...player,
-        id: `player-${index}`,
-        color: pastelPalette[index % pastelPalette.length],
-      }));
-      if (next.length < playerCount) {
-        const extras = Array.from({ length: playerCount - next.length }, (_, offset) => {
-          const index = next.length + offset;
-          return {
-            id: `player-${index}`,
-            name: generateAlias(index * 19 + Date.now()),
-            score: 0,
-            color: pastelPalette[index % pastelPalette.length],
-          } satisfies Player;
-        });
-        return [...next, ...extras];
-      }
-      return next;
-    });
-  }, [playerCount]);
+  // Players will be loaded from backend via PlayerList component
 
   useEffect(() => {
     setPairCount((prev) => {
       if (!hasEnoughTerms) {
-        return 0;
+        return MIN_PAIR_COUNT;
       }
       const nextDefault = Math.min(maxPairs, DEFAULT_PAIR_TARGET);
-      if (prev === 0) {
-        return nextDefault;
+      if (prev < MIN_PAIR_COUNT) {
+        return Math.max(MIN_PAIR_COUNT, nextDefault);
       }
-      return Math.min(prev, maxPairs);
+      return Math.min(Math.max(prev, MIN_PAIR_COUNT), maxPairs);
     });
   }, [hasEnoughTerms, maxPairs]);
 
@@ -453,7 +492,6 @@ export default function GameArena({ terms, backgroundImage }: GameArenaProps) {
     }
   }, [matches, pairCount, status, clearTurnPopup]);
 
-  const canStart = players.every((player) => player.name.trim().length > 0);
   const progress = pairCount > 0 ? Math.min(100, Math.round((matches / pairCount) * 100)) : 0;
   const activePlayer = players[activeIndex];
 
@@ -470,22 +508,6 @@ export default function GameArena({ terms, backgroundImage }: GameArenaProps) {
     return "Kartları çevirmek için oyunu başlat.";
   })();
 
-  const handleNameChange = (index: number, value: string) => {
-    setPlayers((prev) => {
-      const next = [...prev];
-      next[index] = { ...next[index], name: value };
-      return next;
-    });
-    setShowValidation(false);
-  };
-
-  const handleRandomAlias = (index: number) => {
-    setPlayers((prev) => {
-      const next = [...prev];
-      next[index] = { ...next[index], name: generateAlias() };
-      return next;
-    });
-  };
 
   const handleCardClick = (cardId: string) => {
     if (locked || status !== "playing") {
@@ -527,32 +549,97 @@ export default function GameArena({ terms, backgroundImage }: GameArenaProps) {
     setStep("setup");
   };
 
-  const startGame = () => {
-    if (!canStart) {
-      setShowValidation(true);
-      return;
-    }
-    const preparedPlayers = players.map((player, index) => ({
-      ...player,
-      id: `player-${index}`,
-      score: 0,
-    }));
-
+  const startGame = async () => {
     if (!hasEnoughTerms) {
       return;
     }
 
-    const deck = createDeck(terms, pairCount);
+    // Konfeti animasyonu (0.7 saniye)
+    const duration = 700;
+    const end = Date.now() + duration;
+    const colors = [currentPalette.primary, currentPalette.secondary, currentPalette.tertiary];
+
+    const frame = () => {
+      // Merkezden yayılan konfeti
+      confetti({
+        particleCount: 4,
+        angle: 90,
+        spread: 45,
+        origin: { x: 0.5, y: 0.5 },
+        colors: colors,
+        shapes: ['circle'],
+        ticks: 100,
+        gravity: 0.8,
+        decay: 0.92,
+        startVelocity: 25,
+      });
+
+      // Sağdan gelen konfeti
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 40,
+        origin: { x: 0.8, y: 0.6 },
+        colors: colors,
+        shapes: ['circle'],
+        ticks: 100,
+        gravity: 0.8,
+        decay: 0.92,
+        startVelocity: 20,
+      });
+
+      // Soldan gelen konfeti
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 40,
+        origin: { x: 0.2, y: 0.6 },
+        colors: colors,
+        shapes: ['circle'],
+        ticks: 100,
+        gravity: 0.8,
+        decay: 0.92,
+        startVelocity: 20,
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+
+    frame();
+
+    // Backend'den oyuncuları al
+    let gamePlayers: Player[] = [];
+    try {
+      const lobbyCode = typeof window !== 'undefined' 
+        ? localStorage.getItem('current_game_code') 
+        : null;
+      
+      if (lobbyCode) {
+        const lobby = await getLobbyByCode(lobbyCode);
+        const palette = [currentPalette.primary, currentPalette.secondary, currentPalette.tertiary, currentPalette.quaternary];
+        gamePlayers = lobby.players.map((p, index) => ({
+          id: `player-${p.id}`,
+          name: p.username,
+          score: p.score || 0,
+          color: palette[index % palette.length],
+        }));
+        setPlayers(gamePlayers);
+      }
+    } catch (err) {
+      console.error('Oyuncular yüklenemedi:', err);
+    }
+
+    const deck = createDeck(terms, pairCount, duplicateLevel);
 
     clearBoardState();
-    setShowValidation(false);
-    setPlayers(preparedPlayers);
     setCards(deck);
     setStatus("playing");
     setStep("play");
 
-    if (preparedPlayers[0]) {
-      displayTurnPopup(preparedPlayers[0], { lockBoard: false, unlockAfter: false });
+    if (gamePlayers[0]) {
+      displayTurnPopup(gamePlayers[0], { lockBoard: false, unlockAfter: false });
     }
   };
 
@@ -563,10 +650,21 @@ export default function GameArena({ terms, backgroundImage }: GameArenaProps) {
     return styles.rankOther;
   };
 
+  // Renk teması CSS değişkenleri
+  const colorThemeStyle = useMemo(() => ({
+    "--theme-primary": currentPalette.primary,
+    "--theme-secondary": currentPalette.secondary,
+    "--theme-tertiary": currentPalette.tertiary,
+    "--theme-quaternary": currentPalette.quaternary,
+  } as CSSProperties), [currentPalette]);
+
   return (
     <div
       className={styles.gamePage}
-      style={backgroundImage ? ({ ["--arena-bg-desktop" as const]: `url(${backgroundImage})` } as CSSProperties) : undefined}
+      style={{
+        ...(backgroundImage ? ({ ["--arena-bg-desktop" as const]: `url(${backgroundImage})` } as CSSProperties) : {}),
+        ...colorThemeStyle,
+      }}
     >
       <div className={styles.gamePageMask} />
       <div className={styles.gameWrapper}>
@@ -585,7 +683,7 @@ export default function GameArena({ terms, backgroundImage }: GameArenaProps) {
             <Link className={styles.secondaryButton} href="/">
               ← Ana sayfa
             </Link>
-            <Link className={styles.secondaryButton} href="/admin">
+            <Link className={styles.secondaryButton} href="/admin" >
               Admin paneli
             </Link>
           </div>
@@ -594,80 +692,135 @@ export default function GameArena({ terms, backgroundImage }: GameArenaProps) {
 
         {step === "setup" ? (
           <div className={styles.setupLayout}>
+            {/* Üstte: Oyuncu listesi */}
+            <aside className={styles.playerListSidebar}>
+              <PlayerList />
+            </aside>
+            
+            {/* Altta: Oyun ayarları */}
             <section className={styles.panel}>
               <h2 className={styles.panelTitle}>Oyun ayarları</h2>
-              <div className={styles.panelGrid}>
-                <div>
-                  <span className={styles.label}>Oyuncu sayısı</span>
-                  <div className={styles.pillRow}>
-                    {[1, 2, 3, 4].map((value) => (
+              <div className={styles.gameSettingsCompact}>
+                {/* Kart Çifti + Renk Teması (Yan yana) */}
+                <div className={styles.settingsRow}>
+                  <div className={styles.settingItemCompact}>
+                    <label className={styles.settingLabel}>Kart çifti</label>
+                    {hasEnoughTerms ? (
+                      <div className={styles.settingControlCompact}>
+                        <input
+                          className={styles.slider}
+                          type="range"
+                          min={MIN_PAIR_COUNT}
+                          max={maxPairs}
+                          value={pairCount}
+                          onChange={(event) => setPairCount(Number(event.target.value))}
+                        />
+                        <div className={styles.settingDisplay}>
+                          <span className={styles.settingNumber}>{pairCount}</span>
+                          <span className={styles.settingUnit}>çift ({pairCount * duplicateLevel} kart)</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className={styles.settingError}>
+                        Admin panelinden en az {MIN_PAIR_COUNT} kart eklemelisin.
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className={styles.settingItemCompact}>
+                    <label className={styles.settingLabel}>Renk teması</label>
+                    <div className={styles.colorPickerWrapper}>
                       <button
                         type="button"
-                        key={value}
-                        className={classNames(styles.pill, value === playerCount && styles.pillActive)}
-                        onClick={() => setPlayerCount(value)}
+                        className={styles.colorPickerButton}
+                        onClick={() => setShowColorPicker(!showColorPicker)}
+                        style={{
+                          background: `linear-gradient(135deg, ${currentPalette.primary} 0%, ${currentPalette.secondary} 50%, ${currentPalette.tertiary} 100%)`,
+                        }}
                       >
-                        {value}
+                        <span className={styles.colorPickerDot} />
                       </button>
-                    ))}
+                      {showColorPicker && (
+                        <div className={styles.colorPickerMenu}>
+                          {(Object.keys(colorPalettes) as ColorTheme[]).map((theme) => {
+                            const palette = colorPalettes[theme];
+                            return (
+                              <button
+                                key={theme}
+                                type="button"
+                                className={classNames(styles.colorPickerOption, colorTheme === theme && styles.colorPickerOptionActive)}
+                                onClick={() => {
+                                  setColorTheme(theme);
+                                  setShowColorPicker(false);
+                                }}
+                                style={{
+                                  background: `linear-gradient(135deg, ${palette.primary} 0%, ${palette.secondary} 50%, ${palette.tertiary} 100%)`,
+                                }}
+                                title={palette.name}
+                              >
+                                {colorTheme === theme && <span className={styles.colorPickerCheck}>✓</span>}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <span className={styles.label}>
-                    Kart çifti{hasEnoughTerms ? ` (${pairCount})` : ""}
-                  </span>
-                  {hasEnoughTerms ? (
-                    <div className={styles.sliderRow}>
-                      <input
-                        className={styles.slider}
-                        type="range"
-                        min={2}
-                        max={maxPairs}
-                        value={pairCount}
-                        onChange={(event) => setPairCount(Number(event.target.value))}
-                      />
-                      <div className={styles.sliderInfo}>
-                        <span>{pairCount * 2} kart</span>
-                        <span>Maks. {maxPairs * 2} kart</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className={styles.sliderInfo}>
-                      <span>Admin panelinden en az iki kart eklemelisin.</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className={styles.playerList}>
-                {players.map((player, index) => (
-                  <div key={player.id} className={styles.playerRow}>
-                    <span className={styles.playerBadge} style={{ backgroundColor: player.color }}>
-                      {index + 1}
-                    </span>
-                    <input
-                      className={styles.playerInput}
-                      value={player.name}
-                      placeholder="Takma ad"
-                      onChange={(event) => handleNameChange(index, event.target.value)}
-                    />
-                    <button type="button" className={styles.aliasButton} onClick={() => handleRandomAlias(index)}>
-                      Rastgele
+
+                {/* Mükerrer Kart Çifti (Altında) */}
+                <div className={styles.settingItemCompact}>
+                  <label className={styles.settingLabel}>Mükerrer kart çifti</label>
+                  <div className={styles.settingSelect}>
+                    <button
+                      type="button"
+                      className={styles.settingSelectButton}
+                      onClick={() => setShowDuplicateDropdown(!showDuplicateDropdown)}
+                    >
+                      {duplicateLevel === 2 && "Kolay (2)"}
+                      {duplicateLevel === 3 && "Orta (3)"}
+                      {duplicateLevel === 4 && "Zor (4)"}
+                      <span className={styles.settingSelectArrow}>▼</span>
                     </button>
+                    {showDuplicateDropdown && (
+                      <div className={styles.dropdownMenu}>
+                        <button
+                          type="button"
+                          className={classNames(styles.dropdownItem, duplicateLevel === 2 && styles.dropdownItemActive)}
+                          onClick={() => {
+                            setDuplicateLevel(2);
+                            setShowDuplicateDropdown(false);
+                          }}
+                        >
+                          Kolay (2)
+                        </button>
+                        <button
+                          type="button"
+                          className={classNames(styles.dropdownItem, duplicateLevel === 3 && styles.dropdownItemActive)}
+                          onClick={() => {
+                            setDuplicateLevel(3);
+                            setShowDuplicateDropdown(false);
+                          }}
+                        >
+                          Orta (3)
+                        </button>
+                        <button
+                          type="button"
+                          className={classNames(styles.dropdownItem, duplicateLevel === 4 && styles.dropdownItemActive)}
+                          onClick={() => {
+                            setDuplicateLevel(4);
+                            setShowDuplicateDropdown(false);
+                          }}
+                        >
+                          Zor (4)
+                        </button>
+                      </div>
+                    )}
                   </div>
-                ))}
+                </div>
               </div>
-              {showValidation && (
-                <p className={styles.validation}>Başlamak için tüm oyuncular bir takma ad seçmeli.</p>
-              )}
+
               <div className={styles.panelControls}>
-                <button
-                  type="button"
-                  className={styles.ghostButton}
-                  onClick={() => hasEnoughTerms && setPairCount(Math.min(maxPairs, DEFAULT_PAIR_TARGET))}
-                  disabled={!hasEnoughTerms}
-                >
-                  Kartları sıfırla
-                </button>
                 <button
                   type="button"
                   className={styles.primaryButton}
@@ -680,14 +833,9 @@ export default function GameArena({ terms, backgroundImage }: GameArenaProps) {
               {hasEnoughTerms ? (
                 <p className={styles.tip}>Bağlantıyı paylaş; herkes tarayıcısından bağlanarak takma adını girebilir.</p>
               ) : (
-                <p className={styles.validation}>En az iki kart ekleyene kadar oyunu başlatamazsın. Admin panelinden kart ekle.</p>
+                <p className={styles.validation}>En az {MIN_PAIR_COUNT} kart ekleyene kadar oyunu başlatamazsın. Admin panelinden kart ekle.</p>
               )}
             </section>
-            
-            {/* Sağ taraf: Backend'den gelen oyuncu listesi */}
-            <aside className={styles.playerListSidebar}>
-              <PlayerList />
-            </aside>
           </div>
         ) : (
           <section className={styles.gameShell}>

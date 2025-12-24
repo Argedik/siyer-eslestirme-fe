@@ -81,7 +81,7 @@ export default function JoinGameDialog({ isOpen, onClose }: JoinGameDialogProps)
 		if (value.length === CODE_LEN && !isValidCode(value)) {
 			setError('Türkçe karakterleri denebilirsiniz.');
 		} else {
-			setError('');
+		setError('');
 		}
 	};
 
@@ -138,8 +138,8 @@ export default function JoinGameDialog({ isOpen, onClose }: JoinGameDialogProps)
 				}
 			}
 
-			// Başarılı - oyun sayfasına git
-			router.push('/game');
+			// Başarılı - oyun kurulum sayfasına git
+			router.push('/game-setup');
 		} catch (err: any) {
 			// Hata durumunda uyarı göster
 			const errorMessage = err?.message || 'Lütfen adminin paylaştığı lobi kodunu giriniz';

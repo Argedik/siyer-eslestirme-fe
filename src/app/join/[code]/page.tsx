@@ -14,7 +14,7 @@ export default function JoinPage() {
 			const upperCode = code.toUpperCase();
 			if (isValidCode(upperCode)) {
 				// Geçerli kod - oyun sayfasına yönlendir
-				router.replace('/game');
+				router.replace('/game-setup');
 			} else {
 				// Geçersiz kod - ana sayfaya yönlendir
 				router.replace('/');

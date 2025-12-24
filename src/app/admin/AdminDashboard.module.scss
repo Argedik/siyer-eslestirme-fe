@@ -6,6 +6,17 @@
 	gap: clamp(1.8rem, 3vw, 2.6rem);
 }
 
+.mainContent {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: clamp(1.5rem, 3vw, 2rem);
+	align-items: flex-start;
+
+	@media (max-width: 1024px) {
+		grid-template-columns: 1fr;
+	}
+}
+
 .header {
 	display: flex;
 	justify-content: space-between;
@@ -47,12 +58,15 @@
 	background: rgba(10, 46, 43, 0.75);
 	border: 1px solid rgba(32, 178, 170, 0.2);
 	border-radius: 24px;
-	padding: clamp(1.6rem, 4vw, 2.5rem);
+	padding: clamp(1.2rem, 3vw, 1.8rem);
 	display: flex;
 	flex-direction: column;
-	gap: 1.5rem;
+	gap: 1.2rem;
 	backdrop-filter: blur(14px);
 	box-shadow: 0 18px 40px rgba(10, 46, 43, 0.55);
+	width: fit-content;
+	max-width: 100%;
+	min-height: 0;
 }
 
 .formHeader {
@@ -97,8 +111,11 @@
 .form {
 	display: flex;
 	flex-direction: column;
-	gap: 1.4rem;
+	gap: 1.2rem;
+	flex: 1;
 }
+
+// Hafta Tablosu stilleri artık WeekTable component'inde
 
 .formGrid {
 	display: grid;
@@ -189,7 +206,6 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	gap: 0.8rem;
 	min-width: 180px;
 }
 
@@ -233,6 +249,10 @@
 	display: flex;
 	flex-direction: column;
 	gap: 1.4rem;
+	position: sticky;
+	top: clamp(1.6rem, 4vw, 3.5rem);
+	max-height: calc(100vh - clamp(3.2rem, 8vw, 7rem));
+	overflow-y: auto;
 }
 
 .listHeader {
@@ -350,6 +370,17 @@
 	transform: translateY(-1px);
 }
 
+@media (max-width: 1024px) {
+	.mainContent {
+		grid-template-columns: 1fr;
+	}
+
+	.listSection {
+		position: static;
+		max-height: none;
+	}
+}
+
 @media (max-width: 880px) {
 	.header {
 		flex-direction: column;
@@ -381,6 +412,8 @@
 		flex: 1;
 		text-align: center;
 	}
+
+	// WeekTable component'i kendi responsive stillerini yönetiyor
 }
 
 .previewImage {

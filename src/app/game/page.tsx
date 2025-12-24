@@ -1,38 +1,14 @@
-import path from "node:path";
-import { promises as fs } from "node:fs";
-import GameArena from "@/components/game/GameArena";
-import { listTerms } from "@/lib/terms";
+/**
+ * Eski /game route'u - Artık kullanılmıyor
+ * Yeni route'lar:
+ * - /game-setup - Oyun kurulum sayfası
+ * - /game-play - Oyun oynama sayfası
+ * 
+ * Bu dosya geriye dönük uyumluluk için /game-setup'a yönlendiriyor
+ */
 
-async function readImageFiles(relativeDir: string): Promise<string[]> {
-  try {
-    const dirPath = path.join(process.cwd(), "public", relativeDir);
-    const entries = await fs.readdir(dirPath, { withFileTypes: true });
-    return entries
-      .filter((entry) => entry.isFile())
-      .map((entry) => entry.name)
-      .filter((name) => name.toLowerCase().endsWith(".png"))
-      .sort((a, b) => a.localeCompare(b, "tr"));
-  } catch (error) {
-    console.warn(`Klasör okunamadı: ${relativeDir}`, error);
-    return [];
-  }
-}
+import { redirect } from 'next/navigation';
 
-export default async function GamePage() {
-  const [terms, backgroundFiles] = await Promise.all([
-    listTerms(),
-    readImageFiles(path.join("resimler", "arkaplan")),
-  ]);
-
-  const defaultBackground = '/resimler/arkaplan/siyer%20eşleştirme.png';
-  const backgroundImage = backgroundFiles[0]
-    ? `/resimler/arkaplan/${backgroundFiles[0]}`
-    : defaultBackground;
-
-  return (
-    <GameArena
-      terms={terms}
-      backgroundImage={backgroundImage}
-    />
-  );
+export default function GamePage() {
+  redirect('/game-setup');
 }
