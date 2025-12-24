@@ -9,13 +9,15 @@ import styles from './PlayerList.module.scss';
 interface PlayerListProps {
 	/** Lobi kodu */
 	lobbyCode?: string;
+	/** Aktif oyuncunun adı (vurgulanacak) */
+	activePlayerName?: string;
 }
 
 /**
  * Oyuncu Listesi Komponenti
  * Backend'den gelen oyuncuları avatar ve isimleriyle gösterir
  */
-export default function PlayerList({ lobbyCode }: PlayerListProps) {
+export default function PlayerList({ lobbyCode, activePlayerName }: PlayerListProps) {
 	const [players, setPlayers] = useState<PlayerResponse[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -100,13 +102,15 @@ export default function PlayerList({ lobbyCode }: PlayerListProps) {
 				</div>
 			) : (
 				<ul className={styles.list}>
-					{players.map((player) => (
-						<li key={player.id} className={styles.item}>
+					{players.map((player) => {
+						const isActive = activePlayerName && player.username === activePlayerName;
+						return (
+						<li key={player.id} className={`${styles.item} ${isActive ? styles.active : ''}`}>
 							<div className={styles.avatarWrapper}>
 								<Avvvatars
 									value={player.avatarUrl || player.username}
 									style="shape"
-									size={40}
+									size={20}
 									shadow={true}
 									border={player.isAdmin}
 									borderColor="#20b2aa"
@@ -123,7 +127,8 @@ export default function PlayerList({ lobbyCode }: PlayerListProps) {
 								)}
 							</div>
 						</li>
-					))}
+						);
+					})}
 				</ul>
 			)}
 		</div>
