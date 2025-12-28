@@ -11,7 +11,9 @@
  */
 
 // Environment variable'dan API URL'i al, yoksa varsayılan kullan
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://78.180.182.197:8080';
+// Production: https://api.argedik.com
+// Development: http://localhost:8080 veya http://78.180.182.197:8080
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.argedik.com';
 
 /**
  * API Hata Sınıfı
